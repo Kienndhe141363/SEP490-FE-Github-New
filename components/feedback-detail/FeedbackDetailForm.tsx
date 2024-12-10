@@ -178,7 +178,7 @@ const FeedbackDetailForm = ({ id }: Props) => {
   return (
     <div className="flex min-h-screen max-h-screen overflow-hidden bg-[#EFF5EB]">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-6">
           <img
             src="/assets/images/fpt-logo.png"

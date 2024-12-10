@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Home, Users, BookOpen, Settings, LogOut, UserSquare2, GraduationCap, ChevronDown } from "lucide-react";
+import {
+  Home,
+  Users,
+  BookOpen,
+  Settings,
+  LogOut,
+  UserSquare2,
+  GraduationCap,
+  ChevronDown,
+} from "lucide-react";
 import { FiEdit } from "react-icons/fi";
 
 interface FeedbackData {
@@ -98,7 +107,8 @@ const FeedbackListForTraineeForm: React.FC = () => {
     switch (orderBy) {
       case "latest":
         filteredData.sort(
-          (a, b) => new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime()
+          (a, b) =>
+            new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime()
         );
         break;
       case "high":
@@ -135,19 +145,19 @@ const FeedbackListForTraineeForm: React.FC = () => {
 
   // Handle pagination
   const handleNextPage = () => {
-    setCurrentPage(prev => prev + 1);
+    setCurrentPage((prev) => prev + 1);
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
+      setCurrentPage((prev) => prev - 1);
     }
   };
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-10">
           <img
             src="/assets/images/fpt-logo.png"
@@ -159,31 +169,52 @@ const FeedbackListForTraineeForm: React.FC = () => {
         </div>
 
         <nav className="text-white">
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Home className="w-6 h-6 mr-4" />
             <span className="font-bold">Home</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Users className="w-6 h-6 mr-4" />
             <span className="font-bold">User Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookOpen className="w-6 h-6 mr-4" />
             <span className="font-bold">Curriculum Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <GraduationCap className="w-6 h-6 mr-4" />
             <span className="font-bold">Class Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 mt-36 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 mt-36 hover:bg-[#5da639]"
+          >
             <Settings className="w-6 h-6 mr-4" />
             <span className="font-bold">Setting</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <UserSquare2 className="w-6 h-6 mr-4" />
             <span className="font-bold">My Account</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <LogOut className="w-6 h-6 mr-4" />
             <span className="font-bold">Sign out</span>
           </a>
@@ -193,7 +224,7 @@ const FeedbackListForTraineeForm: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 ml-[228px] bg-[#EFF5EB] p-24 relative min-h-screen">
         <h2 className="text-6xl font-bold mb-8">Feedback Management</h2>
-        
+
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex gap-4 mb-4">
@@ -213,10 +244,10 @@ const FeedbackListForTraineeForm: React.FC = () => {
               <div className="flex gap-2">
                 {/* Subject Dropdown */}
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setShowSubjectDropdown(!showSubjectDropdown)}
                     className={`bg-[#6FBC44] text-white px-4 py-1 rounded flex items-center gap-2 ${
-                      selectedSubject ? 'bg-[#5da639]' : ''
+                      selectedSubject ? "bg-[#5da639]" : ""
                     }`}
                   >
                     {selectedSubject || "Subject"}
@@ -225,7 +256,7 @@ const FeedbackListForTraineeForm: React.FC = () => {
                   {showSubjectDropdown && (
                     <div className="absolute top-full mt-1 bg-white border rounded shadow-lg z-10">
                       {subjects.map((subject) => (
-                        <div 
+                        <div
                           key={subject}
                           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                           onClick={() => handleSubjectSelect(subject)}
@@ -239,10 +270,10 @@ const FeedbackListForTraineeForm: React.FC = () => {
 
                 {/* Rate Dropdown */}
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setShowRateDropdown(!showRateDropdown)}
                     className={`bg-[#6FBC44] text-white px-4 py-1 rounded flex items-center gap-2 ${
-                      selectedRate !== null ? 'bg-[#5da639]' : ''
+                      selectedRate !== null ? "bg-[#5da639]" : ""
                     }`}
                     disabled={showNotRated}
                   >
@@ -252,7 +283,7 @@ const FeedbackListForTraineeForm: React.FC = () => {
                   {showRateDropdown && (
                     <div className="absolute top-full mt-1 bg-white border rounded shadow-lg z-10">
                       {rates.map((rate) => (
-                        <div 
+                        <div
                           key={rate.label}
                           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                           onClick={() => handleRateSelect(rate.value)}
@@ -264,9 +295,9 @@ const FeedbackListForTraineeForm: React.FC = () => {
                   )}
                 </div>
 
-                <button 
+                <button
                   className={`bg-[#6FBC44] text-white px-4 py-1 rounded ${
-                    showNotRated ? 'bg-[#5da639]' : ''
+                    showNotRated ? "bg-[#5da639]" : ""
                   }`}
                   onClick={handleNotRatedToggle}
                 >
@@ -278,27 +309,27 @@ const FeedbackListForTraineeForm: React.FC = () => {
             <div>
               <p className="font-semibold mb-2">Order by:</p>
               <div className="flex gap-2">
-                <button 
+                <button
                   className={`bg-[#6FBC44] text-white px-4 py-1 rounded ${
-                    orderBy === 'latest' ? 'bg-[#5da639]' : ''
+                    orderBy === "latest" ? "bg-[#5da639]" : ""
                   }`}
-                  onClick={() => setOrderBy('latest')}
+                  onClick={() => setOrderBy("latest")}
                 >
                   Latest
                 </button>
-                <button 
+                <button
                   className={`bg-[#6FBC44] text-white px-4 py-1 rounded ${
-                    orderBy === 'high' ? 'bg-[#5da639]' : ''
+                    orderBy === "high" ? "bg-[#5da639]" : ""
                   }`}
-                  onClick={() => setOrderBy('high')}
+                  onClick={() => setOrderBy("high")}
                 >
                   High
                 </button>
-                <button 
+                <button
                   className={`bg-[#6FBC44] text-white px-4 py-1 rounded ${
-                    orderBy === 'low' ? 'bg-[#5da639]' : ''
+                    orderBy === "low" ? "bg-[#5da639]" : ""
                   }`}
-                  onClick={() => setOrderBy('low')}
+                  onClick={() => setOrderBy("low")}
                 >
                   Low
                 </button>
@@ -349,7 +380,7 @@ const FeedbackListForTraineeForm: React.FC = () => {
 
         {/* Pagination */}
         <div className="flex justify-center mt-4 gap-2">
-          <button 
+          <button
             onClick={handlePrevPage}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
             disabled={currentPage === 1}
@@ -359,7 +390,7 @@ const FeedbackListForTraineeForm: React.FC = () => {
           <div className="px-4 py-2 bg-[#6FBC44] text-white rounded">
             {currentPage}
           </div>
-          <button 
+          <button
             onClick={handleNextPage}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >

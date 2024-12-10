@@ -48,7 +48,7 @@ const AttendanceTracking: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-10">
           <Image
             src="/assets/images/fpt-logo.png"

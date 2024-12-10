@@ -1,12 +1,29 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { Home, Users, BookOpen, Settings, LogOut, UserCircle, Filter, BookLock, BookA, BookIcon, BookAIcon, BookAudio, BookCheck } from "lucide-react";
+import {
+  Home,
+  Users,
+  BookOpen,
+  Settings,
+  LogOut,
+  UserCircle,
+  Filter,
+  BookLock,
+  BookA,
+  BookIcon,
+  BookAIcon,
+  BookAudio,
+  BookCheck,
+} from "lucide-react";
 import { FiEdit } from "react-icons/fi";
 
-
 // Hàm tính toán điểm trung bình từ 3 môn
-const calculateTotal = (subject1: number, subject2: number, subject3: number) => {
+const calculateTotal = (
+  subject1: number,
+  subject2: number,
+  subject3: number
+) => {
   return ((subject1 + subject2 + subject3) / 3).toFixed(1); // Chia đều và làm tròn đến 1 chữ số thập phân
 };
 
@@ -59,7 +76,9 @@ const ViewGradeListForm: React.FC = () => {
 
   // Hàm lọc học viên theo khoảng điểm
   const filteredStudents = students.filter((student) => {
-    const total = parseFloat(calculateTotal(student.subject1, student.subject2, student.subject3));
+    const total = parseFloat(
+      calculateTotal(student.subject1, student.subject2, student.subject3)
+    );
 
     if (filter === "below-5") {
       return total < 5;
@@ -80,7 +99,7 @@ const ViewGradeListForm: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-10">
           <img
             src="/assets/images/fpt-logo.png"
@@ -92,31 +111,52 @@ const ViewGradeListForm: React.FC = () => {
         </div>
 
         <nav className="text-white">
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Home className="w-6 h-6 mr-4" />
             <span className="font-bold">Home</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Users className="w-6 h-6 mr-4" />
             <span className="font-bold">User Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookOpen className="w-6 h-6 mr-4" />
             <span className="font-bold">Curriculum Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookCheck className="w-6 h-6 mr-4" />
             <span className="font-bold">Class Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 mt-60 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 mt-60 hover:bg-[#5da639]"
+          >
             <Settings className="w-6 h-6 mr-4" />
             <span className="font-bold">Setting</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <UserCircle className="w-6 h-6 mr-4" />
             <span className="font-bold">My Account</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <LogOut className="w-6 h-6 mr-4" />
             <span className="font-bold">Sign out</span>
           </a>
@@ -146,15 +186,22 @@ const ViewGradeListForm: React.FC = () => {
           <thead>
             <tr className="bg-[#6FBC44] text-white">
               <th className="px-6 py-3 uppercase tracking-wider">#</th>
-              <th className="px-6 py-3 text-center tracking-wider">Trainee Name</th>
-              <th className="px-6 py-3 text-center tracking-wider">Assignment 1</th>
-              <th className="px-6 py-3 text-center tracking-wider">Assignment 2</th>
-              <th className="px-6 py-3 text-center tracking-wider">Assignment 3</th>
+              <th className="px-6 py-3 text-center tracking-wider">
+                Trainee Name
+              </th>
+              <th className="px-6 py-3 text-center tracking-wider">
+                Assignment 1
+              </th>
+              <th className="px-6 py-3 text-center tracking-wider">
+                Assignment 2
+              </th>
+              <th className="px-6 py-3 text-center tracking-wider">
+                Assignment 3
+              </th>
               <th className="px-6 py-3 text-center tracking-wider">
                 <div className="flex justify-between items-center">
                   <span className="flex-1 text-center">Total</span>
-                  
-                  
+
                   <select
                     onChange={(e) => setFilter(e.target.value)}
                     className=" bg-white text-black rounded py-1 "
@@ -178,11 +225,21 @@ const ViewGradeListForm: React.FC = () => {
               <tr key={student.id} className="bg-white">
                 <td className="border px-6 py-3 text-center">{student.id}</td>
                 <td className="border px-6 py-3 text-center">{student.name}</td>
-                <td className="border px-6 py-3 text-center">{student.subject1}</td>
-                <td className="border px-6 py-3 text-center">{student.subject2}</td>
-                <td className="border px-6 py-3 text-center">{student.subject3}</td>
                 <td className="border px-6 py-3 text-center">
-                  {calculateTotal(student.subject1, student.subject2, student.subject3)}
+                  {student.subject1}
+                </td>
+                <td className="border px-6 py-3 text-center">
+                  {student.subject2}
+                </td>
+                <td className="border px-6 py-3 text-center">
+                  {student.subject3}
+                </td>
+                <td className="border px-6 py-3 text-center">
+                  {calculateTotal(
+                    student.subject1,
+                    student.subject2,
+                    student.subject3
+                  )}
                 </td>
                 <td className="border px-6 py-3 text-center">
                   <div className="flex justify-center">

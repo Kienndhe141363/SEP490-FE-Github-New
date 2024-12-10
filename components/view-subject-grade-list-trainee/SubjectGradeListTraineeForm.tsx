@@ -1,7 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { Home, Users, BookOpen, Settings, LogOut, UserCircle, BookCheck } from "lucide-react";
+import {
+  Home,
+  Users,
+  BookOpen,
+  Settings,
+  LogOut,
+  UserCircle,
+  BookCheck,
+} from "lucide-react";
 import { FiEdit } from "react-icons/fi";
 
 const ViewSubjectGradeListTraineeForm: React.FC = () => {
@@ -39,7 +47,7 @@ const ViewSubjectGradeListTraineeForm: React.FC = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-10">
           <img
             src="/assets/images/fpt-logo.png"
@@ -51,31 +59,52 @@ const ViewSubjectGradeListTraineeForm: React.FC = () => {
         </div>
 
         <nav className="text-white">
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Home className="w-6 h-6 mr-4" />
             <span className="font-bold">Home</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Users className="w-6 h-6 mr-4" />
             <span className="font-bold">User Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookOpen className="w-6 h-6 mr-4" />
             <span className="font-bold">Curriculum Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookCheck className="w-6 h-6 mr-4" />
             <span className="font-bold">Class Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 mt-32 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 mt-32 hover:bg-[#5da639]"
+          >
             <Settings className="w-6 h-6 mr-4" />
             <span className="font-bold">Setting</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <UserCircle className="w-6 h-6 mr-4" />
             <span className="font-bold">My Account</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <LogOut className="w-6 h-6 mr-4" />
             <span className="font-bold">Sign out</span>
           </a>
@@ -100,7 +129,9 @@ const ViewSubjectGradeListTraineeForm: React.FC = () => {
           <tbody>
             {grades.map((grade) => (
               <tr key={grade.id} className="bg-white">
-                <td className="border px-6 py-3 text-center">{grade.subject}</td>
+                <td className="border px-6 py-3 text-center">
+                  {grade.subject}
+                </td>
                 <td className="border px-6 py-3 text-center">{grade.weight}</td>
                 <td className="border px-6 py-3 text-center">{grade.grade}</td>
                 <td className="border px-6 py-3 text-center">

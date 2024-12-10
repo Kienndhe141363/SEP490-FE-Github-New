@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Home, Users, BookOpen, Settings, LogOut, UserCircle, BookCheck } from "lucide-react";
+import {
+  Home,
+  Users,
+  BookOpen,
+  Settings,
+  LogOut,
+  UserCircle,
+  BookCheck,
+} from "lucide-react";
 
 interface FeedbackDetailData {
   class: string;
@@ -28,7 +36,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
     satisfiedCurriculum: true,
     trainerTeachFull: true,
     trainerOnTime: true,
-    description: ""
+    description: "",
   });
 
   const handleSave = () => {
@@ -41,10 +49,12 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
     console.log("Canceling...");
   };
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFeedbackDetail(prev => ({
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setFeedbackDetail((prev) => ({
       ...prev,
-      description: e.target.value
+      description: e.target.value,
     }));
   };
 
@@ -65,16 +75,16 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
   };
 
   const handleRadioChange = (field: keyof FeedbackDetailData) => {
-    setFeedbackDetail(prev => ({
+    setFeedbackDetail((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
   return (
     <div className="flex min-h-screen max-h-screen overflow-hidden bg-[#EFF5EB]">
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-6">
           <img
             src="/assets/images/fpt-logo.png"
@@ -86,31 +96,52 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
         </div>
 
         <nav className="text-white">
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Home className="w-5 h-5 mr-3" />
             <span className="font-bold">Home</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <Users className="w-5 h-5 mr-3" />
             <span className="font-bold">User Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookOpen className="w-5 h-5 mr-3" />
             <span className="font-bold">Curriculum Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <BookCheck className="w-5 h-5 mr-3" />
             <span className="font-bold">Class Management</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 mt-40 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 mt-40 hover:bg-[#5da639]"
+          >
             <Settings className="w-5 h-5 mr-3" />
             <span className="font-bold">Setting</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <UserCircle className="w-5 h-5 mr-3" />
             <span className="font-bold">My Account</span>
           </a>
-          <a href="#" className="flex items-center px-6 py-3 hover:bg-[#5da639]">
+          <a
+            href="#"
+            className="flex items-center px-6 py-3 hover:bg-[#5da639]"
+          >
             <LogOut className="w-5 h-5 mr-3" />
             <span className="font-bold">Sign out</span>
           </a>
@@ -129,7 +160,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             {/* Feedback Detail Section */}
             <h3 className="text-2xl font-bold mb-6">Feedback Detail</h3>
-            
+
             <div className="grid grid-cols-2 gap-y-4 mb-8">
               <div className="flex gap-2">
                 <span className="font-bold">Class:</span>
@@ -151,7 +182,9 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
 
             {/* Rating Section */}
             <div className="mb-6">
-              <p className="mb-2 font-medium">How would you rate the curriculum quality?</p>
+              <p className="mb-2 font-medium">
+                How would you rate the curriculum quality?
+              </p>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((num) => renderStar(num))}
               </div>
@@ -160,7 +193,9 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
             {/* Questions Grid */}
             <div className="grid grid-cols-2 gap-x-8 gap-y-6 mb-6">
               <div>
-                <p className="mb-2">Would you recommend the course to others?</p>
+                <p className="mb-2">
+                  Would you recommend the course to others?
+                </p>
                 <div className="space-x-4">
                   <label className="inline-flex items-center">
                     <input
@@ -168,7 +203,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="recommend"
                       className="form-radio text-[#6FBC44]"
                       checked={feedbackDetail.recommendCourse}
-                      onChange={() => handleRadioChange('recommendCourse')}
+                      onChange={() => handleRadioChange("recommendCourse")}
                     />
                     <span className="ml-2">Yes</span>
                   </label>
@@ -178,7 +213,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="recommend"
                       className="form-radio text-[#6FBC44]"
                       checked={!feedbackDetail.recommendCourse}
-                      onChange={() => handleRadioChange('recommendCourse')}
+                      onChange={() => handleRadioChange("recommendCourse")}
                     />
                     <span className="ml-2">No</span>
                   </label>
@@ -194,7 +229,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="onTime"
                       className="form-radio text-[#6FBC44]"
                       checked={feedbackDetail.trainerOnTime}
-                      onChange={() => handleRadioChange('trainerOnTime')}
+                      onChange={() => handleRadioChange("trainerOnTime")}
                     />
                     <span className="ml-2">Yes</span>
                   </label>
@@ -204,7 +239,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="onTime"
                       className="form-radio text-[#6FBC44]"
                       checked={!feedbackDetail.trainerOnTime}
-                      onChange={() => handleRadioChange('trainerOnTime')}
+                      onChange={() => handleRadioChange("trainerOnTime")}
                     />
                     <span className="ml-2">No</span>
                   </label>
@@ -220,7 +255,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="satisfied"
                       className="form-radio text-[#6FBC44]"
                       checked={feedbackDetail.satisfiedCurriculum}
-                      onChange={() => handleRadioChange('satisfiedCurriculum')}
+                      onChange={() => handleRadioChange("satisfiedCurriculum")}
                     />
                     <span className="ml-2">Yes</span>
                   </label>
@@ -230,7 +265,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="satisfied"
                       className="form-radio text-[#6FBC44]"
                       checked={!feedbackDetail.satisfiedCurriculum}
-                      onChange={() => handleRadioChange('satisfiedCurriculum')}
+                      onChange={() => handleRadioChange("satisfiedCurriculum")}
                     />
                     <span className="ml-2">No</span>
                   </label>
@@ -246,7 +281,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="teachFull"
                       className="form-radio text-[#6FBC44]"
                       checked={feedbackDetail.trainerTeachFull}
-                      onChange={() => handleRadioChange('trainerTeachFull')}
+                      onChange={() => handleRadioChange("trainerTeachFull")}
                     />
                     <span className="ml-2">Yes</span>
                   </label>
@@ -256,7 +291,7 @@ const FeedbackDetailForTraineeForm: React.FC = () => {
                       name="teachFull"
                       className="form-radio text-[#6FBC44]"
                       checked={!feedbackDetail.trainerTeachFull}
-                      onChange={() => handleRadioChange('trainerTeachFull')}
+                      onChange={() => handleRadioChange("trainerTeachFull")}
                     />
                     <span className="ml-2">No</span>
                   </label>

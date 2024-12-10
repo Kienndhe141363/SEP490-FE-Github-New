@@ -97,7 +97,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       )}
 
       {/* Sidebar */}
-      <div className="w-[228px] bg-[#6FBC44] fixed h-screen">
+      <div className="w-[228px] bg-[#6FBC44] fixed h-screen z-10">
         <div className="p-10">
           <Image
             src="/assets/images/fpt-logo.png"
@@ -111,7 +111,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
           <Link
             href="/authen/dashboard"
             className={`flex items-center px-6 py-3 ${
-              isActive("/authen/dashboard") ? "bg-[#5da639]" : "hover:bg-[#5da639]"
+              isActive("/authen/dashboard")
+                ? "bg-[#5da639]"
+                : "hover:bg-[#5da639]"
             }`}
           >
             <Home className="w-6 h-6 mr-4" />
