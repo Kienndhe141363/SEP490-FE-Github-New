@@ -35,6 +35,7 @@ const ViewProfileForm = () => {
   const setCurrentUser = useUserStore((state) => state.setUser);
   const setUserAvatarAction = useUserStore((state) => state.updateAvatar);
   const handleAvatarClick = () => {
+    console.log("Clicking on avatar");
     fileInputRef.current?.click();
   };
 
@@ -42,8 +43,27 @@ const ViewProfileForm = () => {
     const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      // setAvatarUrl(imageUrl);
-      // Upload logic can go here
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        axios
+          .post(`${BASE_API_URL}/user/upload-avatar`, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${getJwtToken()}`,
+            },
+          })
+          .then((response) => {
+            console.log("Upload Image Response:", response.data);
+            setUserAvatarAction(response.data.message);
+          })
+          .catch((error) => {
+            console.error("Error uploading image:", error);
+          });
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
@@ -112,7 +132,8 @@ const ViewProfileForm = () => {
                 <img
                   src={currentUser?.imgAva}
                   alt="User avatar"
-                  className="rounded-full object-cover"
+                  className="rounded-full object-cover w-full h-full"
+                  onClick={handleAvatarClick}
                 />
               </div>
               <UploadButton
@@ -128,7 +149,10 @@ const ViewProfileForm = () => {
                 }}
               />
 
-              <button className="absolute bottom-0 right-0 w-[25px] h-[25px] bg-[#FFBA34] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#e5a82f] transition-colors">
+              <button
+                className="absolute bottom-0 right-0 w-[25px] h-[25px] bg-[#FFBA34] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#e5a82f] transition-colors"
+                onClick={handleAvatarClick}
+              >
                 <span className="text-white text-xs">📷</span>
               </button>
               <input

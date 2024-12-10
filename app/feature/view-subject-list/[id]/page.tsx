@@ -1,12 +1,16 @@
-import SubjectDetailForm from '@/components/subject-detail/SubjectDetailForm'
-import React from 'react'
+"use client";
+
+import AddSubjectForm from "@/components/add-subject/AddSubjectForm";
+import { useParams } from "next/navigation";
 
 const SubjectDetail = () => {
+  const { id } = useParams();
+
   return (
     <div>
-      <SubjectDetailForm />
+      <AddSubjectForm id={id} />
     </div>
-  )
-}
+  );
+};
 
-export default SubjectDetail
+export default SubjectDetail;
