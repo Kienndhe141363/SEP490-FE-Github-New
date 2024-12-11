@@ -52,10 +52,7 @@ const ViewUserListForm: React.FC = () => {
           keyword: `%${searchTerm}%`, // Từ khóa tìm kiếm
           status: statusFilter ? statusFilter === "true" : undefined, // Trạng thái (true/false hoặc undefined)
           roleId: roleFilter || undefined, // Vai trò (hoặc undefined nếu không chọn)
-          pageable: {
-            page: currentPage,
-            size: 10, // Số lượng item mỗi trang
-          },
+          page: currentPage,
         },
         {
           headers: {
@@ -74,7 +71,7 @@ const ViewUserListForm: React.FC = () => {
       }
 
       setUsers(userData.sort((a, b) => a.userId - b.userId));
-      setTotalPages(Math.ceil((response.data.data.totalCount || 1) / 10)); // Tính tổng số trang
+      setTotalPages(response.data.data.pagination?.totalPages || 1); // Tính tổng số trang
       setError(null);
     } catch (err) {
       if (axios.isAxiosError(err)) {
