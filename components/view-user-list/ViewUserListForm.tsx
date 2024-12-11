@@ -34,43 +34,6 @@ const ViewUserListForm: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string>(""); // For Role filter
   const currentUser = useUserStore((state) => state.user);
 
-  const fetchUsers = async (page = 0) => {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-      router.push("/authen/login");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await axios.get(`${BASE_API_URL}/user/management/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: { page, searchTerm },
-      });
-
-      const userData = response?.data?.users;
-      if (Array.isArray(userData)) {
-        setUsers(userData);
-        setTotalPages(response.data.totalPages || 1); // Set total pages based on response
-      } else {
-        console.error("Data received is not an array:", userData);
-        setUsers([]);
-      }
-      setError(null);
-    } catch (err) {
-      setError("Error fetching users");
-      console.error("Error fetching users:", err);
-      setUsers([]);
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        router.push("/authen/login");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const searchUsers = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -88,7 +51,7 @@ const ViewUserListForm: React.FC = () => {
         {
           keyword: `%${searchTerm}%`, // Từ khóa tìm kiếm
           status: statusFilter ? statusFilter === "true" : undefined, // Trạng thái (true/false hoặc undefined)
-          roles: roleFilter || undefined, // Vai trò (hoặc undefined nếu không chọn)
+          roleId: roleFilter || undefined, // Vai trò (hoặc undefined nếu không chọn)
           pageable: {
             page: currentPage,
             size: 10, // Số lượng item mỗi trang
@@ -178,7 +141,6 @@ const ViewUserListForm: React.FC = () => {
   const handlePageChange = (page: number) => {
     if (page < 0 || page >= totalPages) return;
     setCurrentPage(page);
-    fetchUsers(page);
   };
 
   const renderPaginationButtons = () => {
@@ -339,7 +301,7 @@ const ViewUserListForm: React.FC = () => {
       );
 
       // Reload users after successful import
-      fetchUsers(currentPage);
+      searchUsers(new Event("submit") as unknown as React.FormEvent);
       toast.success("File imported successfully!");
     } catch (err) {
       console.error("Error importing file:", err);
@@ -348,12 +310,8 @@ const ViewUserListForm: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage]);
-
-  useEffect(() => {
     searchUsers(new Event("submit") as unknown as React.FormEvent); // Gọi lại searchUsers khi thay đổi bộ lọc//-
-  }, [statusFilter, roleFilter]);
+  }, [statusFilter, roleFilter, currentPage]);
 
   return (
     <div className="flex-1 ml-[228px] bg-[#EFF5EB] p-8 min-h-screen">
@@ -422,11 +380,11 @@ const ViewUserListForm: React.FC = () => {
           onChange={(e) => setRoleFilter(e.target.value)}
         >
           <option value="">All Roles</option>
-          <option value="ROLE_ADMIN">ROLE_ADMIN</option>
-          <option value="ROLE_MANAGER">ROLE_MANAGER</option>
-          <option value="ROLE_CLASS_ADMIN">ROLE_CLASS_ADMIN</option>
-          <option value="ROLE_TRAINER">ROLE_TRAINER</option>
-          <option value="ROLE_TRAINEE">ROLE_TRAINEE</option>
+          <option value="1">ROLE_ADMIN</option>
+          <option value="2">ROLE_MANAGER</option>
+          <option value="3">ROLE_CLASS_ADMIN</option>
+          <option value="4">ROLE_TRAINER</option>
+          <option value="5">ROLE_TRAINEE</option>
         </select>
       </div>
       {loading ? (
