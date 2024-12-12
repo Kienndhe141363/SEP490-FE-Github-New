@@ -35,11 +35,11 @@ const AddNewClass2Form = ({
     subjectList: [],
   });
 
-  // const router = useRouter();
+  const router = useRouter();
 
-  const handleCancel = () => {
-    setActiveStep(1);
-    // window.location.href = "/feature/view-class-list";
+  const handleCancel = (e: any) => {
+    e.preventDefault();
+    router.push("/feature/view-class-list");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +134,26 @@ const AddNewClass2Form = ({
     fetchListLocation();
     fetchListGeneration();
     fetchListTrainer();
+    // if (data?.subjectList?.length) {
+    //   setFormData({
+    //     ...formData,
+    //     classCode: data.classCode,
+    //     locationId: data.locationId,
+    //     generationId: data.generationId,
+    //     startDate: data.startDate,
+    //     endDate: data.endDate,
+    //     note: data.note,
+    //     subjectList: data?.subjectList?.map((subject: any) => ({
+    //       subjectId: subject.subjectId,
+    //       slot: subject.slot,
+    //       trainer: subject.trainer,
+    //       sessionList: subject?.sessionList,
+    //     })),
+    //   });
+    // }
+  }, []);
+
+  useEffect(() => {
     if (data?.classId) {
       fetchListSubject();
     }
@@ -252,25 +272,25 @@ const AddNewClass2Form = ({
           {/* Form Content */}
           <div className="mt-6">
             <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block font-bold">Class Name</label>
-              <input
-                type="text"
-                className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                placeholder="Enter class name"
-                value={data.className}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block font-bold">Class Admin</label>
-              <input
-                type="text"
-                className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                value={data.admin}
-                readOnly
-              />
-            </div>
+              <div>
+                <label className="block font-bold">Class Name</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  placeholder="Enter class name"
+                  value={data.className}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block font-bold">Class Admin</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  value={data.admin}
+                  readOnly
+                />
+              </div>
 
               <div>
                 <label className="block font-bold">Class Code</label>

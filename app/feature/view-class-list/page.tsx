@@ -1,11 +1,11 @@
-import ViewClassListForm from '@/components/view-class-list/ViewClassListForm'
-import React from 'react'
+import ViewClassListForm from "@/components/view-class-list/ViewClassListForm";
+import React from "react";
 
 const ViewClassList = () => {
   return (
     <div>
-      <ViewClassListForm/>
+      <ViewClassListForm />
     </div>
-  )
-}
-export default ViewClassList
+  );
+};
+export default ViewClassList;

@@ -53,6 +53,8 @@ const ViewUserListForm: React.FC = () => {
           status: statusFilter ? statusFilter === "true" : undefined, // Trạng thái (true/false hoặc undefined)
           roleId: roleFilter || undefined, // Vai trò (hoặc undefined nếu không chọn)
           page: currentPage,
+          orderBy: "userId",
+          sortDirection: "asc",
         },
         {
           headers: {
