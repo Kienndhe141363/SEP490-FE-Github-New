@@ -103,10 +103,10 @@ const Trainee = ({ id, listTrainee, fetchListTrainee, status }: Props) => {
   };
   console.log(listTraineeForAdd);
 
-  const handleAddTraineeToClass = async ({ classId, account }: any) => {
+  const handleAddTraineeToClass = async ({ classId, email }: any) => {
     try {
       await axios.post(
-        `${BASE_API_URL}/trainee/add?classId=${classId}&account=${account}`,
+        `${BASE_API_URL}/trainee/add?classId=${classId}&email=${email}`,
         {
           // classId,
           // account,
@@ -206,7 +206,7 @@ const Trainee = ({ id, listTrainee, fetchListTrainee, status }: Props) => {
                         onClick={() =>
                           handleAddTraineeToClass({
                             classId: id,
-                            account: trainee.account,
+                            email: trainee.email,
                           })
                         }
                       >
