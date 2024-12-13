@@ -296,6 +296,12 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           }
         });
       } else {
+        const lessonList = response.data.data.validSessions;
+        console.log("lessonList", lessonList);
+        setInitialValues((prev) => ({
+          ...prev,
+          lessonList,
+        }));
         toast.success("Import successful!");
       }
     } catch (error) {
@@ -366,6 +372,12 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
                 setFieldValue("lessonList", initialValues.lessonList);
               }
             }, [initialValues]);
+
+            useEffect(() => {
+              if (!id && initialValues.lessonList.length) {
+                setFieldValue("lessonList", initialValues.lessonList);
+              }
+            }, [initialValues.lessonList]);
 
             return (
               <Tab.Group
@@ -562,31 +574,33 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
                       <FieldArray name="lessonList">
                         {({ remove, push }) => (
                           <div>
-                            <div className="flex justify-end mb-4">
-                              <button
-                                type="button"
-                                className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] mr-4"
-                                onClick={() => downloadTemplate()}
-                              >
-                                Download Template
-                              </button>
-                              <label className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] cursor-pointer">
-                                Import
-                                <input
-                                  id="fileInput"
-                                  name="file"
-                                  type="file"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    setFieldValue(
-                                      "file",
-                                      e.currentTarget.files?.[0]
-                                    );
-                                    handleImportFile(e); // Truyền sự kiện e đúng cách
-                                  }}
-                                />
-                              </label>
-                            </div>
+                            {!id && (
+                              <div className="flex justify-end mb-4">
+                                <button
+                                  type="button"
+                                  className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] mr-4"
+                                  onClick={() => downloadTemplate()}
+                                >
+                                  Download Template
+                                </button>
+                                <label className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] cursor-pointer">
+                                  Import
+                                  <input
+                                    id="fileInput"
+                                    name="file"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      setFieldValue(
+                                        "file",
+                                        e.currentTarget.files?.[0]
+                                      );
+                                      handleImportFile(e); // Truyền sự kiện e đúng cách
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                            )}
                             <table className="w-full border border-[#D4CBCB] text-center">
                               <thead>
                                 <tr className="bg-[#6FBC44] text-white">
