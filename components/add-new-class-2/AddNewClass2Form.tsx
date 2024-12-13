@@ -35,11 +35,11 @@ const AddNewClass2Form = ({
     subjectList: [],
   });
 
-  // const router = useRouter();
+  const router = useRouter();
 
-  const handleCancel = () => {
-    setActiveStep(1);
-    // window.location.href = "/feature/view-class-list";
+  const handleCancel = (e: any) => {
+    e.preventDefault();
+    router.back();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -252,25 +252,25 @@ const AddNewClass2Form = ({
           {/* Form Content */}
           <div className="mt-6">
             <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block font-bold">Class Name</label>
-              <input
-                type="text"
-                className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                placeholder="Enter class name"
-                value={data.className}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block font-bold">Class Admin</label>
-              <input
-                type="text"
-                className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-                value={data.admin}
-                readOnly
-              />
-            </div>
+              <div>
+                <label className="block font-bold">Class Name</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  placeholder="Enter class name"
+                  value={data.className}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block font-bold">Class Admin</label>
+                <input
+                  type="text"
+                  className="w-full border p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
+                  value={data.admin}
+                  readOnly
+                />
+              </div>
 
               <div>
                 <label className="block font-bold">Class Code</label>
