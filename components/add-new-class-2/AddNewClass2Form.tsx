@@ -342,7 +342,17 @@ const AddNewClass2Form = ({
                   type="date"
                   className="w-full border p-2"
                   onChange={(e) =>
-                    setFormData({ ...formData, startDate: e.target.value })
+                    setFormData({
+                      ...formData,
+                      startDate: e.target.value,
+                      endDate: new Date(
+                        new Date(e.target.value).setMonth(
+                          new Date(e.target.value).getMonth() + 6
+                        )
+                      )
+                        .toISOString()
+                        .split("T")[0],
+                    })
                   }
                   value={formData?.startDate}
                 />
@@ -392,7 +402,7 @@ const AddNewClass2Form = ({
                     {listSubject?.map((subject) => (
                       <tr key={subject.subjectId}>
                         <td className="border border-gray-300 p-2">
-                          {subject.subjectName}
+                          {subject.subjectCode}
                         </td>
                         <td className="border border-gray-300 p-2">
                           <select
