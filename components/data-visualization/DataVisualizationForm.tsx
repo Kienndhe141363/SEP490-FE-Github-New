@@ -59,9 +59,9 @@ const DataVisualizationForm: React.FC<DataVisualizationFormProps> = () => {
 
   // Class Performance Data
   const performanceData = {
-    labels: ['8-9', '9-10', '7-8', '<6', '6-7'],
+    labels: [ '9-10','8-9', '7-8', '6-7', '<6'],
     datasets: [{
-      data: [25, 28, 22, 9, 16],
+      data: [25, 28, 22, 90, 10],
       backgroundColor: [
         '#FF6B6B',
         '#FFA500',
