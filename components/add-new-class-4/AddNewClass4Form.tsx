@@ -446,11 +446,11 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
                         </div>
                       )
                     )}
-                    <LessonForm
+                    {/* <LessonForm
                       setSubjects={setSubjects}
                       subjects={subjects}
                       subjectId={subject.subjectId}
-                    />
+                    /> */}
                   </>
                 )}
               </div>
