@@ -10,6 +10,7 @@ import {
   FieldArray,
   ErrorMessage,
   useFormikContext,
+  Form,
 } from "formik";
 import * as Yup from "yup";
 import { Trash2 } from "lucide-react";
@@ -31,7 +32,7 @@ interface FormValues {
   lessonList: { lesson: string; sessionOrder: number; description: string }[];
 }
 
-const Form = ({
+const FormSubject = ({
   initialValues,
   id,
   currentTab,
@@ -725,7 +726,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          <Form
+          <FormSubject
             id={id}
             initialValues={initialValues}
             currentTab={currentTab}
