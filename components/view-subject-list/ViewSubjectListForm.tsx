@@ -87,7 +87,8 @@ const ViewSubjectListForm: React.FC = () => {
       if (!updatingSubject) return;
 
       const newStatus = !updatingSubject.status;
-
+      console.log("newStatus", newStatus);
+      console.log("updatingSubject", updatingSubject);
       await axios.put(
         `${BASE_API_URL}/subject/update-subject`,
         {
@@ -97,7 +98,7 @@ const ViewSubjectListForm: React.FC = () => {
           documentLink: updatingSubject.documentLink,
           descriptions: updatingSubject.descriptions,
           status: newStatus,
-          schemes: [],
+          schemes: updatingSubject.schemes,
         },
         {
           headers: {
