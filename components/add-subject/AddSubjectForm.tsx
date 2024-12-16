@@ -155,7 +155,11 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
             descriptions: values.descriptions,
             status: true,
             schemes: values.schemes,
-            lessonList: values.lessonList,
+            lessonList: values.lessonList.map((lesson: any, index: number) => ({
+              lesson: lesson.lesson,
+              sessionOrder: index + 1,
+              description: lesson.description,
+            })),
             id,
           },
           {
@@ -175,7 +179,11 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           descriptions: values.descriptions,
           status: true,
           schemes: values.schemes,
-          lessonList: values.lessonList,
+          lessonList: values.lessonList.map((lesson: any, index: number) => ({
+            lesson: lesson.lesson,
+            sessionOrder: index + 1,
+            description: lesson.description,
+          })),
           documentLink: "",
         },
         {
@@ -269,40 +277,19 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
         }
       );
 
-      const errors = response.data.errors || [];
-      if (errors.length) {
-        errors.forEach((err: { code: any; message: any }) => {
-          switch (err.code) {
-            case "ERR045":
-              toast.error("ERR045: Lesson can't not be empty.");
-              break;
-            case "ERR046":
-              toast.error("ERR046: Order can't not be empty.");
-              break;
-            case "ERR047":
-              toast.error("ERR047: Order already exist.");
-              break;
-            case "ERR048":
-              toast.error("ERR048: Order number must be at least 1.");
-              break;
-            case "ERR041":
-              toast.error("ERR041: Failed to upload.");
-              break;
-            case "ERR042":
-              toast.error("ERR042: Session expired.");
-              break;
-            default:
-              toast.error(`Unknown error: ${err.message}`);
-          }
+      const lessonList = response.data.data.validSessions;
+      console.log("lessonList", lessonList);
+      setInitialValues((prev) => ({
+        ...prev,
+        lessonList,
+      }));
+      toast.success("Import successful!");
+
+      const errorMessages = response.data.data.errorMessages;
+      if (errorMessages.length) {
+        errorMessages.forEach((message: string) => {
+          toast.error(message);
         });
-      } else {
-        const lessonList = response.data.data.validSessions;
-        console.log("lessonList", lessonList);
-        setInitialValues((prev) => ({
-          ...prev,
-          lessonList,
-        }));
-        toast.success("Import successful!");
       }
     } catch (error) {
       toast.error("Import failed. Please try again.");
@@ -637,11 +624,19 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
                                       />
                                     </td>
                                     <td className="px-4 py-2">
-                                      <Field
+                                      {/* <Field
                                         name={`lessonList[${index}].sessionOrder`}
                                         type="number"
                                         placeholder="Session Order"
                                         className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                                      /> */}
+                                      <input
+                                        type="number"
+                                        name={`lessonList[${index}].sessionOrder`}
+                                        placeholder="Session Order"
+                                        className="p-2.5 w-full h-11 rounded"
+                                        readOnly
+                                        value={index + 1}
                                       />
                                       <ErrorMessage
                                         name={`lessonList[${index}].sessionOrder`}
