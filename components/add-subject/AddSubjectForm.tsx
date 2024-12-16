@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import { getJwtToken } from "@/lib/utils";
 import axios from "axios";
 import { BASE_API_URL } from "@/config/constant";
-import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
+import {
+  Formik,
+  Field,
+  FieldArray,
+  ErrorMessage,
+  useFormikContext,
+} from "formik";
 import * as Yup from "yup";
 import { Trash2 } from "lucide-react";
 import { FormError } from "../custom/form-error";
@@ -16,6 +22,363 @@ interface Subject {
   subjectId?: number;
   subjectCode?: string;
 }
+
+interface FormValues {
+  subjectName: string;
+  subjectCode: string;
+  descriptions: string;
+  schemes: { markName: string; markWeight: number }[];
+  lessonList: { lesson: string; sessionOrder: number; description: string }[];
+}
+
+const Form = ({
+  initialValues,
+  id,
+  currentTab,
+  setCurrentTab,
+  hasErrors,
+  subjectCodeError,
+  handleNext,
+  handleImportFile,
+  downloadTemplate,
+}: any) => {
+  const { values, setFieldValue, errors, validateForm, setTouched } =
+    useFormikContext<FormValues>();
+
+  useEffect(() => {
+    if (id && initialValues.subjectCode) {
+      setFieldValue("subjectName", initialValues.subjectName);
+      setFieldValue("subjectCode", initialValues.subjectCode);
+      setFieldValue("descriptions", initialValues.descriptions);
+      setFieldValue("schemes", initialValues.schemes);
+      setFieldValue("lessonList", initialValues.lessonList);
+    }
+  }, [initialValues]);
+
+  useEffect(() => {
+    if (!id && initialValues.lessonList.length) {
+      setFieldValue("lessonList", initialValues.lessonList);
+    }
+  }, [initialValues.lessonList]);
+
+  return (
+    <Tab.Group
+      selectedIndex={currentTab}
+      onChange={(index) => {
+        // Không cho phép chuyển sang tab Session List nếu có lỗi
+        if (index === 1 && hasErrors) {
+          return; // Không chuyển tab nếu có lỗi
+        }
+        setCurrentTab(index); // Chuyển tab nếu không có lỗi
+      }}
+    >
+      <Tab.List className="flex space-x-4 mb-8">
+        <Tab
+          className={({ selected }) =>
+            selected
+              ? "bg-[#6FBC44] text-white font-bold py-2 px-4 rounded"
+              : "bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded"
+          }
+        >
+          General Info
+        </Tab>
+        <Tab
+          disabled={currentTab === 0} // Disable tab Session List khi có lỗi
+          className={
+            ({ selected }) =>
+              selected
+                ? "bg-[#6FBC44] text-white font-bold py-2 px-4 rounded"
+                : "bg-gray-200 text-gray-400 font-bold py-2 px-4 rounded cursor-not-allowed" // Always show as disabled
+          }
+        >
+          Session List
+        </Tab>
+      </Tab.List>
+      <Tab.Panels>
+        <Tab.Panel>
+          <Form className="grid grid-cols-2 gap-x-16 gap-y-8">
+            <div className="col-span-1">
+              <label className="block font-bold text-2xl mb-2">
+                Subject Name<span className="text-red-500">*</span>
+              </label>
+              <Field
+                name="subjectName"
+                placeholder="Input Subject Name"
+                className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+              />
+              <ErrorMessage
+                name="subjectName"
+                component="div"
+                className="text-red-500"
+              />
+              <label className="block font-bold text-2xl mb-2 mt-4">
+                Description
+              </label>
+              <Field
+                as="textarea"
+                name="descriptions"
+                placeholder="Input Description"
+                className="p-2.5 w-full border border-[#D4CBCB] h-20 rounded"
+              />
+              <ErrorMessage
+                name="descriptions"
+                component="div"
+                className="text-red-500"
+              />
+            </div>
+            <div className="col-span-1">
+              <label className="block font-bold text-2xl mb-2">
+                Subject Code<span className="text-red-500">*</span>
+              </label>
+              <Field
+                name="subjectCode"
+                placeholder="Input Subject Code"
+                className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+              />
+              {subjectCodeError && (
+                <div className="text-red-500 mt-1">{subjectCodeError}</div>
+              )}
+              {/* Hiển thị thông báo lỗi */}
+              <label className="block font-bold text-2xl mb-2 mt-4">
+                Weight Grade
+              </label>
+              <FieldArray name="schemes">
+                {({ remove, push }) => (
+                  <div>
+                    <table className="w-full border border-[#D4CBCB] text-center">
+                      <thead>
+                        <tr className="bg-[#6FBC44] text-white">
+                          <th className="px-4 py-3 uppercase tracking-wider">
+                            Mark Name
+                          </th>
+                          <th className="px-4 py-3 uppercase tracking-wider">
+                            Mark Weight (%)
+                          </th>
+                          <th className="px-4 py-3 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {values?.schemes?.map((scheme: any, index: any) => (
+                          <tr key={index} className="border-b border-[#D4CBCB]">
+                            <td className="px-4 py-2">
+                              <Field
+                                name={`schemes[${index}].markName`}
+                                placeholder="Mark Name"
+                                className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                              />
+                              <ErrorMessage
+                                name={`schemes[${index}].markName`}
+                                component="div"
+                                className="text-red-500 text-sm mt-1"
+                              />
+                            </td>
+                            <td className="px-4 py-2">
+                              <Field
+                                name={`schemes[${index}].markWeight`}
+                                type="number"
+                                placeholder="Mark Weight"
+                                className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                              />
+                              <ErrorMessage
+                                name={`schemes[${index}].markWeight`}
+                                component="div"
+                                className="text-red-500 text-sm mt-1"
+                              />
+                            </td>
+                            <td className="px-4 py-2">
+                              <button
+                                type="button"
+                                onClick={() => remove(index)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="w-6 h-6" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {values.schemes.length === 0 && (
+                          <tr>
+                            <td
+                              colSpan={3}
+                              className="text-red-500 text-sm mt-1 text-center"
+                            >
+                              Add mark name to subject
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                    <button
+                      type="button"
+                      onClick={() => push({ markName: "", markWeight: 0 })}
+                      className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
+                    >
+                      + Add Scheme
+                    </button>
+                    {errors.schemes && typeof errors.schemes === "string" && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.schemes}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </FieldArray>
+            </div>
+            <div className="flex mt-10 col-span-2 gap-x-6">
+              <button
+                type="button"
+                onClick={() => {
+                  if (id) {
+                    setCurrentTab(1);
+                    return;
+                  }
+                  handleNext(validateForm, values, setTouched);
+                }}
+                className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded"
+              >
+                Next
+              </button>
+            </div>
+          </Form>
+        </Tab.Panel>
+        <Tab.Panel>
+          <Form className="grid grid-cols-1 gap-x-16 gap-y-8">
+            <FieldArray name="lessonList">
+              {({ remove, push }) => (
+                <div>
+                  {!id && (
+                    <div className="flex justify-end mb-4">
+                      <button
+                        type="button"
+                        className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] mr-4"
+                        onClick={() => downloadTemplate()}
+                      >
+                        Download Template
+                      </button>
+                      <label className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] cursor-pointer">
+                        Import
+                        <input
+                          id="fileInput"
+                          name="file"
+                          type="file"
+                          className="hidden"
+                          onChange={(e) => {
+                            setFieldValue("file", e.currentTarget.files?.[0]);
+                            handleImportFile(e); // Truyền sự kiện e đúng cách
+                          }}
+                        />
+                      </label>
+                    </div>
+                  )}
+                  <table className="w-full border border-[#D4CBCB] text-center">
+                    <thead>
+                      <tr className="bg-[#6FBC44] text-white">
+                        <th className="px-4 py-3 uppercase tracking-wider">
+                          Lesson
+                        </th>
+                        <th className="px-4 py-3 uppercase tracking-wider">
+                          Order
+                        </th>
+                        <th className="px-4 py-3 uppercase tracking-wider">
+                          Description
+                        </th>
+                        <th className="px-4 py-3 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {values.lessonList.map((lesson, index) => (
+                        <tr key={index} className="border-b border-[#D4CBCB]">
+                          <td className="px-4 py-2">
+                            <Field
+                              name={`lessonList[${index}].lesson`}
+                              placeholder="Lesson"
+                              className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                            />
+                            <ErrorMessage
+                              name={`lessonList[${index}].lesson`}
+                              component="div"
+                              className="text-red-500 text-sm mt-1"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <Field
+                              name={`lessonList[${index}].sessionOrder`}
+                              type="number"
+                              placeholder="Session Order"
+                              className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                            />
+                            <ErrorMessage
+                              name={`lessonList[${index}].sessionOrder`}
+                              component="div"
+                              className="text-red-500 text-sm mt-1"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <Field
+                              name={`lessonList[${index}].description`}
+                              placeholder="Description"
+                              className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                            />
+                            <ErrorMessage
+                              name={`lessonList[${index}].description`}
+                              component="div"
+                              className="text-red-500 text-sm mt-1"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <button
+                              type="button"
+                              onClick={() => remove(index)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="w-6 h-6" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      push({
+                        lesson: "",
+                        sessionOrder: 1,
+                        description: "",
+                      })
+                    }
+                    className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
+                  >
+                    + Add Lesson
+                  </button>
+                </div>
+              )}
+            </FieldArray>
+            <div className="flex mt-10 col-span-2 gap-x-6">
+              <button
+                type="button"
+                onClick={() => setCurrentTab(0)}
+                className="text-black bg-[#D5DCD0] font-bold shadow-md hover:shadow-lg hover:bg-gray-400 py-3 px-6 rounded"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded mr-10"
+              >
+                Submit
+              </button>
+            </div>
+          </Form>
+        </Tab.Panel>
+      </Tab.Panels>
+    </Tab.Group>
+  );
+};
 
 const AddSubjectForm = ({ id }: { id?: any }) => {
   const router = useRouter();
@@ -155,11 +518,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
             descriptions: values.descriptions,
             status: true,
             schemes: values.schemes,
-            lessonList: values.lessonList.map((lesson: any, index: number) => ({
-              lesson: lesson.lesson,
-              sessionOrder: index + 1,
-              description: lesson.description,
-            })),
+            lessonList: values.lessonList,
             id,
           },
           {
@@ -179,11 +538,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           descriptions: values.descriptions,
           status: true,
           schemes: values.schemes,
-          lessonList: values.lessonList.map((lesson: any, index: number) => ({
-            lesson: lesson.lesson,
-            sessionOrder: index + 1,
-            description: lesson.description,
-          })),
+          lessonList: values.lessonList,
           documentLink: "",
         },
         {
@@ -277,19 +632,40 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
         }
       );
 
-      const lessonList = response.data.data.validSessions;
-      console.log("lessonList", lessonList);
-      setInitialValues((prev) => ({
-        ...prev,
-        lessonList,
-      }));
-      toast.success("Import successful!");
-
-      const errorMessages = response.data.data.errorMessages;
-      if (errorMessages.length) {
-        errorMessages.forEach((message: string) => {
-          toast.error(message);
+      const errors = response.data.errors || [];
+      if (errors.length) {
+        errors.forEach((err: { code: any; message: any }) => {
+          switch (err.code) {
+            case "ERR045":
+              toast.error("ERR045: Lesson can't not be empty.");
+              break;
+            case "ERR046":
+              toast.error("ERR046: Order can't not be empty.");
+              break;
+            case "ERR047":
+              toast.error("ERR047: Order already exist.");
+              break;
+            case "ERR048":
+              toast.error("ERR048: Order number must be at least 1.");
+              break;
+            case "ERR041":
+              toast.error("ERR041: Failed to upload.");
+              break;
+            case "ERR042":
+              toast.error("ERR042: Session expired.");
+              break;
+            default:
+              toast.error(`Unknown error: ${err.message}`);
+          }
         });
+      } else {
+        const lessonList = response.data.data.validSessions;
+        console.log("lessonList", lessonList);
+        setInitialValues((prev) => ({
+          ...prev,
+          lessonList,
+        }));
+        toast.success("Import successful!");
       }
     } catch (error) {
       toast.error("Import failed. Please try again.");
@@ -349,363 +725,17 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ values, setFieldValue, errors, validateForm, setTouched }) => {
-            useEffect(() => {
-              if (id && initialValues.subjectCode) {
-                setFieldValue("subjectName", initialValues.subjectName);
-                setFieldValue("subjectCode", initialValues.subjectCode);
-                setFieldValue("descriptions", initialValues.descriptions);
-                setFieldValue("schemes", initialValues.schemes);
-                setFieldValue("lessonList", initialValues.lessonList);
-              }
-            }, [initialValues]);
-
-            useEffect(() => {
-              if (!id && initialValues.lessonList.length) {
-                setFieldValue("lessonList", initialValues.lessonList);
-              }
-            }, [initialValues.lessonList]);
-
-            return (
-              <Tab.Group
-                selectedIndex={currentTab}
-                onChange={(index) => {
-                  // Không cho phép chuyển sang tab Session List nếu có lỗi
-                  if (index === 1 && hasErrors) {
-                    return; // Không chuyển tab nếu có lỗi
-                  }
-                  setCurrentTab(index); // Chuyển tab nếu không có lỗi
-                }}
-              >
-                <Tab.List className="flex space-x-4 mb-8">
-                  <Tab
-                    className={({ selected }) =>
-                      selected
-                        ? "bg-[#6FBC44] text-white font-bold py-2 px-4 rounded"
-                        : "bg-gray-200 hover:bg-gray-300 font-bold py-2 px-4 rounded"
-                    }
-                  >
-                    General Info
-                  </Tab>
-                  <Tab
-                    disabled={currentTab === 0} // Disable tab Session List khi có lỗi
-                    className={
-                      ({ selected }) =>
-                        selected
-                          ? "bg-[#6FBC44] text-white font-bold py-2 px-4 rounded"
-                          : "bg-gray-200 text-gray-400 font-bold py-2 px-4 rounded cursor-not-allowed" // Always show as disabled
-                    }
-                  >
-                    Session List
-                  </Tab>
-                </Tab.List>
-                <Tab.Panels>
-                  <Tab.Panel>
-                    <Form className="grid grid-cols-2 gap-x-16 gap-y-8">
-                      <div className="col-span-1">
-                        <label className="block font-bold text-2xl mb-2">
-                          Subject Name<span className="text-red-500">*</span>
-                        </label>
-                        <Field
-                          name="subjectName"
-                          placeholder="Input Subject Name"
-                          className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                        />
-                        <ErrorMessage
-                          name="subjectName"
-                          component="div"
-                          className="text-red-500"
-                        />
-                        <label className="block font-bold text-2xl mb-2 mt-4">
-                          Description
-                        </label>
-                        <Field
-                          as="textarea"
-                          name="descriptions"
-                          placeholder="Input Description"
-                          className="p-2.5 w-full border border-[#D4CBCB] h-20 rounded"
-                        />
-                        <ErrorMessage
-                          name="descriptions"
-                          component="div"
-                          className="text-red-500"
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <label className="block font-bold text-2xl mb-2">
-                          Subject Code<span className="text-red-500">*</span>
-                        </label>
-                        <Field
-                          name="subjectCode"
-                          placeholder="Input Subject Code"
-                          className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                        />
-                        {subjectCodeError && (
-                          <div className="text-red-500 mt-1">
-                            {subjectCodeError}
-                          </div>
-                        )}
-                        {/* Hiển thị thông báo lỗi */}
-                        <label className="block font-bold text-2xl mb-2 mt-4">
-                          Weight Grade
-                        </label>
-                        <FieldArray name="schemes">
-                          {({ remove, push }) => (
-                            <div>
-                              <table className="w-full border border-[#D4CBCB] text-center">
-                                <thead>
-                                  <tr className="bg-[#6FBC44] text-white">
-                                    <th className="px-4 py-3 uppercase tracking-wider">
-                                      Mark Name
-                                    </th>
-                                    <th className="px-4 py-3 uppercase tracking-wider">
-                                      Mark Weight (%)
-                                    </th>
-                                    <th className="px-4 py-3 uppercase tracking-wider">
-                                      Actions
-                                    </th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {values.schemes.map((scheme, index) => (
-                                    <tr
-                                      key={index}
-                                      className="border-b border-[#D4CBCB]"
-                                    >
-                                      <td className="px-4 py-2">
-                                        <Field
-                                          name={`schemes[${index}].markName`}
-                                          placeholder="Mark Name"
-                                          className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                                        />
-                                        <ErrorMessage
-                                          name={`schemes[${index}].markName`}
-                                          component="div"
-                                          className="text-red-500 text-sm mt-1"
-                                        />
-                                      </td>
-                                      <td className="px-4 py-2">
-                                        <Field
-                                          name={`schemes[${index}].markWeight`}
-                                          type="number"
-                                          placeholder="Mark Weight"
-                                          className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                                        />
-                                        <ErrorMessage
-                                          name={`schemes[${index}].markWeight`}
-                                          component="div"
-                                          className="text-red-500 text-sm mt-1"
-                                        />
-                                      </td>
-                                      <td className="px-4 py-2">
-                                        <button
-                                          type="button"
-                                          onClick={() => remove(index)}
-                                          className="text-red-500 hover:text-red-700"
-                                        >
-                                          <Trash2 className="w-6 h-6" />
-                                        </button>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                  {values.schemes.length === 0 && (
-                                    <tr>
-                                      <td
-                                        colSpan={3}
-                                        className="text-red-500 text-sm mt-1 text-center"
-                                      >
-                                        Add mark name to subject
-                                      </td>
-                                    </tr>
-                                  )}
-                                </tbody>
-                              </table>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  push({ markName: "", markWeight: 0 })
-                                }
-                                className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
-                              >
-                                + Add Scheme
-                              </button>
-                              {errors.schemes &&
-                                typeof errors.schemes === "string" && (
-                                  <div className="text-red-500 text-sm mt-1">
-                                    {errors.schemes}
-                                  </div>
-                                )}
-                            </div>
-                          )}
-                        </FieldArray>
-                      </div>
-                      <div className="flex mt-10 col-span-2 gap-x-6">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (id) {
-                              setCurrentTab(1);
-                              return;
-                            }
-                            handleNext(validateForm, values, setTouched);
-                          }}
-                          className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    </Form>
-                  </Tab.Panel>
-                  <Tab.Panel>
-                    <Form className="grid grid-cols-1 gap-x-16 gap-y-8">
-                      <FieldArray name="lessonList">
-                        {({ remove, push }) => (
-                          <div>
-                            {!id && (
-                              <div className="flex justify-end mb-4">
-                                <button
-                                  type="button"
-                                  className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] mr-4"
-                                  onClick={() => downloadTemplate()}
-                                >
-                                  Download Template
-                                </button>
-                                <label className="bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-gray-500 shadow-md hover:shadow-lg hover:shadow-gray-500 hover:bg-[#5da639] cursor-pointer">
-                                  Import
-                                  <input
-                                    id="fileInput"
-                                    name="file"
-                                    type="file"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                      setFieldValue(
-                                        "file",
-                                        e.currentTarget.files?.[0]
-                                      );
-                                      handleImportFile(e); // Truyền sự kiện e đúng cách
-                                    }}
-                                  />
-                                </label>
-                              </div>
-                            )}
-                            <table className="w-full border border-[#D4CBCB] text-center">
-                              <thead>
-                                <tr className="bg-[#6FBC44] text-white">
-                                  <th className="px-4 py-3 uppercase tracking-wider">
-                                    Lesson
-                                  </th>
-                                  <th className="px-4 py-3 uppercase tracking-wider">
-                                    Order
-                                  </th>
-                                  <th className="px-4 py-3 uppercase tracking-wider">
-                                    Description
-                                  </th>
-                                  <th className="px-4 py-3 uppercase tracking-wider">
-                                    Actions
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {values.lessonList.map((lesson, index) => (
-                                  <tr
-                                    key={index}
-                                    className="border-b border-[#D4CBCB]"
-                                  >
-                                    <td className="px-4 py-2">
-                                      <Field
-                                        name={`lessonList[${index}].lesson`}
-                                        placeholder="Lesson"
-                                        className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                                      />
-                                      <ErrorMessage
-                                        name={`lessonList[${index}].lesson`}
-                                        component="div"
-                                        className="text-red-500 text-sm mt-1"
-                                      />
-                                    </td>
-                                    <td className="px-4 py-2">
-                                      {/* <Field
-                                        name={`lessonList[${index}].sessionOrder`}
-                                        type="number"
-                                        placeholder="Session Order"
-                                        className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                                      /> */}
-                                      <input
-                                        type="number"
-                                        name={`lessonList[${index}].sessionOrder`}
-                                        placeholder="Session Order"
-                                        className="p-2.5 w-full h-11 rounded"
-                                        readOnly
-                                        value={index + 1}
-                                      />
-                                      <ErrorMessage
-                                        name={`lessonList[${index}].sessionOrder`}
-                                        component="div"
-                                        className="text-red-500 text-sm mt-1"
-                                      />
-                                    </td>
-                                    <td className="px-4 py-2">
-                                      <Field
-                                        name={`lessonList[${index}].description`}
-                                        placeholder="Description"
-                                        className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
-                                      />
-                                      <ErrorMessage
-                                        name={`lessonList[${index}].description`}
-                                        component="div"
-                                        className="text-red-500 text-sm mt-1"
-                                      />
-                                    </td>
-                                    <td className="px-4 py-2">
-                                      <button
-                                        type="button"
-                                        onClick={() => remove(index)}
-                                        className="text-red-500 hover:text-red-700"
-                                      >
-                                        <Trash2 className="w-6 h-6" />
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                push({
-                                  lesson: "",
-                                  sessionOrder: 1,
-                                  description: "",
-                                })
-                              }
-                              className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
-                            >
-                              + Add Lesson
-                            </button>
-                          </div>
-                        )}
-                      </FieldArray>
-                      <div className="flex mt-10 col-span-2 gap-x-6">
-                        <button
-                          type="button"
-                          onClick={() => setCurrentTab(0)}
-                          className="text-black bg-[#D5DCD0] font-bold shadow-md hover:shadow-lg hover:bg-gray-400 py-3 px-6 rounded"
-                        >
-                          Back
-                        </button>
-                        <button
-                          type="submit"
-                          className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded mr-10"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </Form>
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            );
-          }}
+          <Form
+            id={id}
+            initialValues={initialValues}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+            hasErrors={hasErrors}
+            subjectCodeError={subjectCodeError}
+            handleNext={handleNext}
+            handleImportFile={handleImportFile}
+            downloadTemplate={downloadTemplate}
+          />
         </Formik>
       </div>
     </div>
