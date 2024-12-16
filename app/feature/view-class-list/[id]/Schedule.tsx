@@ -39,6 +39,21 @@ const Schedule = ({ id, startDate }: Props) => {
     return <td className="p-4 border-r text-yellow-500">Present</td>;
   };
 
+  const hasEdit = (date: string) => {
+    const currentDate = new Date();
+    const startDate = new Date(date);
+
+    if (currentDate < startDate) {
+      return true;
+    }
+
+    if (currentDate > startDate) {
+      return false;
+    }
+
+    return true;
+  };
+
   const getTimeTableBySubject = async (sessionList: any) => {
     try {
       const response = await axios.post(
@@ -139,7 +154,9 @@ const Schedule = ({ id, startDate }: Props) => {
                     <td className="p-4 border-r">{lesson.description}</td>
                     {getStatusByDate(lesson.startDate)}
                     <td className="p-4">
-                      <FiEdit className="w-6 h-6 text-green-600 hover:text-green-800 cursor-pointer" />
+                      {hasEdit(lesson.startDate) && (
+                        <FiEdit className="w-6 h-6 text-green-600 hover:text-green-800 cursor-pointer" />
+                      )}
                     </td>
                   </tr>
                 ))}
