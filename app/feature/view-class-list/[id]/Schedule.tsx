@@ -10,7 +10,7 @@ type Props = {
   startDate: any;
 };
 
-const Session = ({ id, startDate }: Props) => {
+const Schedule = ({ id, startDate }: Props) => {
   const [subjects, setSubjects] = useState<any>([]);
 
   const toggleSubject = (subjectId: number) => {
@@ -92,7 +92,7 @@ const Session = ({ id, startDate }: Props) => {
       <div className="grid grid-cols-5 bg-[#6FBC44] text-white rounded-t-lg">
         <div className="p-3 border-r border-white">No</div>
         <div className="p-3 border-r border-white">Lesson</div>
-        <div className="p-3 border-r border-white">Order</div>
+        {/* <div className="p-3 border-r border-white">Order</div> */}
         <div className="p-3 border-r border-white">Date</div>
         <div className="p-3">Description</div>
       </div>
@@ -108,11 +108,11 @@ const Session = ({ id, startDate }: Props) => {
 
           {subject?.isExpanded && (
             <>
-              {subject?.sessionsList.map((lesson: any, index: number) => (
+              {subject?.sessionsList?.map((lesson: any, index: number) => (
                 <div key={index} className="grid grid-cols-5 border-t">
                   <div className="p-4 border-r">{index + 1}</div>
                   <div className="p-4 border-r">{lesson.lesson}</div>
-                  <div className="p-4 border-r">{lesson.sessionOrder}</div>
+                  {/* <div className="p-4 border-r">{lesson.sessionOrder}</div> */}
                   <div className="p-4 border-r">
                     {/* {formatDate(new Date(subject.createdDate), "dd/MM/yyyy")} */}
                     {/* {formatDate(
@@ -132,4 +132,4 @@ const Session = ({ id, startDate }: Props) => {
   );
 };
 
-export default Session;
+export default Schedule;

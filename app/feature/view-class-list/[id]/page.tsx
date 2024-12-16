@@ -12,6 +12,7 @@ import useRole from "@/hooks/useRole";
 import Grade from "./Grade";
 import TakeAttendanceForm from "./Attendance";
 import WeeklyTimetableForm from "@/components/weekly-timeable/WeeklyTimeableForm";
+import Schedule from "./Schedule";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("Class Info");
@@ -86,6 +87,8 @@ const Page = () => {
         return <Session id={id} startDate={data?.startDate} />;
       case "Weekly Timetable":
         return <WeeklyTimetableForm id={id} listTrainee={listTrainee} />;
+      case "Schedule":
+        return <Schedule id={id} startDate={data?.startDate} />;
       default:
         return null;
     }
@@ -94,6 +97,14 @@ const Page = () => {
   // tôi muốn khi data có status là true thì mới hiển thị tab Attendance và Grade ở trước tab Session
   if (data?.status) {
     listTabs.splice(2, 0, "Attendance", "Grade");
+  }
+
+  const role = useRole();
+  if (
+    // (role === "ROLE_CLASS_ADMIN" || role === "ROLE_MANAGER") &&
+    data?.status
+  ) {
+    listTabs.push("Schedule");
   }
 
   return (
