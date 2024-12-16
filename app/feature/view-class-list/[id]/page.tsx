@@ -101,7 +101,7 @@ const Page = () => {
 
   const role = useRole();
   if (
-    // (role === "ROLE_CLASS_ADMIN" || role === "ROLE_MANAGER") &&
+    (role === "ROLE_CLASS_ADMIN" || role === "ROLE_MANAGER") &&
     data?.status
   ) {
     listTabs.push("Schedule");

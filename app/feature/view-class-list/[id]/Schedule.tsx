@@ -4,6 +4,7 @@ import axios from "axios";
 import { formatDate } from "date-fns";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { FiEdit } from "react-icons/fi";
 
 type Props = {
   id: any;
@@ -21,6 +22,21 @@ const Schedule = ({ id, startDate }: Props) => {
           : subject
       )
     );
+  };
+
+  const getStatusByDate = (date: string) => {
+    const currentDate = new Date();
+    const startDate = new Date(date);
+
+    if (currentDate < startDate) {
+      return <td className="p-4 border-r">Future</td>;
+    }
+
+    if (currentDate > startDate) {
+      return <td className="p-4 border-r text-green-500">Done</td>;
+    }
+
+    return <td className="p-4 border-r text-yellow-500">Present</td>;
   };
 
   const getTimeTableBySubject = async (sessionList: any) => {
@@ -89,45 +105,48 @@ const Schedule = ({ id, startDate }: Props) => {
 
   return (
     <div>
-      <div className="grid grid-cols-5 bg-[#6FBC44] text-white rounded-t-lg">
-        <div className="p-3 border-r border-white">No</div>
-        <div className="p-3 border-r border-white">Lesson</div>
-        {/* <div className="p-3 border-r border-white">Order</div> */}
-        <div className="p-3 border-r border-white">Date</div>
-        <div className="p-3">Description</div>
-      </div>
-      {subjects.map((subject: any, subjectIndex: any) => (
-        <div key={subject.subjectId} className="border rounded-lg mb-4">
-          <div
-            className="flex justify-between items-center p-4 cursor-pointer"
-            onClick={() => toggleSubject(subject.subjectId)}
-          >
-            <h3 className="font-bold">{subject.subjectName}</h3>
-            {subject?.isExpanded ? <ChevronUp /> : <ChevronDown />}
-          </div>
-
-          {subject?.isExpanded && (
-            <>
-              {subject?.sessionsList?.map((lesson: any, index: number) => (
-                <div key={index} className="grid grid-cols-5 border-t">
-                  <div className="p-4 border-r">{index + 1}</div>
-                  <div className="p-4 border-r">{lesson.lesson}</div>
-                  {/* <div className="p-4 border-r">{lesson.sessionOrder}</div> */}
-                  <div className="p-4 border-r">
-                    {/* {formatDate(new Date(subject.createdDate), "dd/MM/yyyy")} */}
-                    {/* {formatDate(
-                      getStartDate(index, subjectIndex),
-                      "dd/MM/yyyy"
-                    )} */}
-                    {formatDate(new Date(lesson.startDate), "dd/MM/yyyy")}
-                  </div>
-                  <div className="p-4">{lesson.description}</div>
-                </div>
-              ))}
-            </>
-          )}
-        </div>
-      ))}
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr className="w-full bg-[#6FBC44] text-white rounded-t-lg">
+            <th className="p-3 border-r border-white">No</th>
+            <th className="p-3 border-r border-white">Lesson</th>
+            <th className="p-3 border-r border-white">Date</th>
+            <th className="p-3 border-r border-white">Description</th>
+            <th className="p-3 border-r border-white">Status</th>
+            <th className="p-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {subjects.map((subject: any, subjectIndex: any) => (
+            <React.Fragment key={subject.subjectId}>
+              <tr
+                className="cursor-pointer"
+                onClick={() => toggleSubject(subject.subjectId)}
+              >
+                <td colSpan={6} className="p-4 font-bold flex">
+                  {subject.subjectName}{" "}
+                  {subject?.isExpanded ? <ChevronUp /> : <ChevronDown />}
+                </td>
+              </tr>
+              {subject?.isExpanded &&
+                subject?.sessionsList?.map((lesson: any, index: number) => (
+                  <tr key={index} className="border-t">
+                    <td className="p-4 border-r">{index + 1}</td>
+                    <td className="p-4 border-r">{lesson.lesson}</td>
+                    <td className="p-4 border-r">
+                      {formatDate(new Date(lesson.startDate), "dd/MM/yyyy")}
+                    </td>
+                    <td className="p-4 border-r">{lesson.description}</td>
+                    {getStatusByDate(lesson.startDate)}
+                    <td className="p-4">
+                      <FiEdit className="w-6 h-6 text-green-600 hover:text-green-800 cursor-pointer" />
+                    </td>
+                  </tr>
+                ))}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
