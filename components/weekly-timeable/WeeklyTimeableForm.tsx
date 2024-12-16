@@ -27,8 +27,8 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
   const [data, setData] = useState<any>(null);
 
   const getSlot = (date: string) => {
-    // tôi muốn date -12h
-    const trueDate = new Date(date).getTime() - 12 * 60 * 60 * 1000;
+    // tôi muốn date +6h
+    const trueDate = new Date(date).getTime() + 6 * 60 * 60 * 1000;
     const time = new Date(trueDate).getHours();
     if (time >= 7 && time < 11) {
       return "slot1";
@@ -67,7 +67,7 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
           ...attendance,
           subjectName: item.subjectName, // Thêm subjectName vào mỗi phần tử attendance
           slot: getSlot(attendance.endDate),
-          dayOfWeek: getDayOfWeek(attendance.startDate),
+          dayOfWeek: getDayOfWeek(attendance.endDate),
         }))
       );
 

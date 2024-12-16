@@ -22,31 +22,34 @@ const Session = ({ id, startDate }: Props) => {
     );
   };
 
-  // const getStartDate = (index: number) => {
-  //   const date = new Date(startDate);
-  //   let daysToAdd = index;
+  const getLastDatePrevSubject = (subjectIndex: number) => {
+    if (subjectIndex === 0) {
+      return new Date(startDate);
+    }
 
-  //   while (true) {
-  //     date.setDate(date.getDate() + daysToAdd);
+    let lastDate = new Date(startDate);
 
-  //     // Kiểm tra nếu ngày rơi vào thứ 2 đến thứ 6 (weekday)
-  //     const dayOfWeek = date.getDay();
-  //     if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-  //       return date;
-  //     }
+    for (let i = 0; i < subjectIndex; i++) {
+      const subject = subjects[i];
+      const lastSession = subject.sessionsList[subject.sessionsList.length - 1];
+      lastDate.setDate(lastDate.getDate() + lastSession.sessionOrder * 0.5);
+    }
 
-  //     // Nếu ngày là thứ Bảy (6) hoặc Chủ Nhật (0), tính lại
-  //     daysToAdd = 1; // Nhảy qua ngày tiếp theo
-  //   }
-  // };
+    return lastDate;
+  };
 
-  const getStartDate = (index: number) => {
-    const date = new Date(startDate);
+  const getStartDate = (index: number, subjectIndex: number) => {
+    let date;
+    if (subjectIndex === 0) {
+      date = new Date(startDate);
+    } else {
+      date = getLastDatePrevSubject(subjectIndex);
+    }
 
     let daysAdded = 0; // Số ngày hợp lệ (weekday) đã thêm
 
     while (daysAdded < index) {
-      date.setDate(date.getDate() + 1); // Tăng ngày lên 1
+      date.setDate(date.getDate() + 0.5); // Tăng ngày lên 1
 
       // Kiểm tra nếu ngày hiện tại là ngày trong tuần (Monday to Friday)
       const dayOfWeek = date.getDay();
@@ -91,7 +94,7 @@ const Session = ({ id, startDate }: Props) => {
         <div className="p-3 border-r border-white">Date</div>
         <div className="p-3">Description</div>
       </div>
-      {subjects.map((subject: any) => (
+      {subjects.map((subject: any, subjectIndex: any) => (
         <div key={subject.subjectId} className="border rounded-lg mb-4">
           <div
             className="flex justify-between items-center p-4 cursor-pointer"
@@ -110,7 +113,10 @@ const Session = ({ id, startDate }: Props) => {
                   <div className="p-4 border-r">{lesson.sessionOrder}</div>
                   <div className="p-4 border-r">
                     {/* {formatDate(new Date(subject.createdDate), "dd/MM/yyyy")} */}
-                    {formatDate(getStartDate(index), "dd/MM/yyyy")}
+                    {formatDate(
+                      getStartDate(index, subjectIndex),
+                      "dd/MM/yyyy"
+                    )}
                   </div>
                   <div className="p-4">{lesson.description}</div>
                 </div>

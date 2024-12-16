@@ -204,8 +204,8 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const startDate = new Date(attendance.startDate).getDate();
-        return startDate === date;
+        const endDate = new Date(attendance.endDate).getDate();
+        return endDate === date;
       }
     );
 
@@ -230,8 +230,8 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const startDate = new Date(attendance.startDate).getDate();
-        return startDate === date;
+        const endDate = new Date(attendance.endDate).getDate();
+        return endDate === date;
       }
     );
 
@@ -245,8 +245,8 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const startDate = new Date(attendance.startDate).getDate();
-        return startDate === date;
+        const endDate = new Date(attendance.endDate).getDate();
+        return endDate === date;
       }
     );
 
