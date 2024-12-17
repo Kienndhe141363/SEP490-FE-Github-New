@@ -660,11 +660,11 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           }
         });
       } else {
-        const lessonList = response.data.data.validSessions;
-        console.log("lessonList", lessonList);
+        const newLessonList = response.data.data.validSessions;
+        console.log("lessonList", newLessonList);
         setInitialValues((prev) => ({
           ...prev,
-          lessonList,
+          lessonList: [...prev.lessonList, ...newLessonList],
         }));
         toast.success("Import successful!");
       }
