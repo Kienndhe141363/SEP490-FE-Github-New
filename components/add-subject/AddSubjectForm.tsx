@@ -306,11 +306,19 @@ const FormSubject = ({
                             />
                           </td>
                           <td className="px-4 py-2">
-                            <Field
+                            {/* <Field
                               name={`lessonList[${index}].sessionOrder`}
                               type="number"
                               placeholder="Session Order"
                               className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
+                            /> */}
+                            <input
+                              type="number"
+                              name={`lessonList[${index}].sessionOrder`}
+                              placeholder="Session Order"
+                              className="p-2.5 w-full h-11 rounded"
+                              readOnly
+                              value={index + 1}
                             />
                             <ErrorMessage
                               name={`lessonList[${index}].sessionOrder`}
@@ -519,7 +527,12 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
             descriptions: values.descriptions,
             status: true,
             schemes: values.schemes,
-            lessonList: values.lessonList,
+            lessonList: values.lessonList.map((lesson: any, index: number) => ({
+              lesson: lesson.lesson,
+              sessionOrder: index + 1,
+              description: lesson.description,
+              sessionId: lesson.sessionId,
+            })),
             id,
           },
           {
@@ -539,7 +552,11 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           descriptions: values.descriptions,
           status: true,
           schemes: values.schemes,
-          lessonList: values.lessonList,
+          lessonList: values.lessonList.map((lesson: any, index: number) => ({
+            lesson: lesson.lesson,
+            sessionOrder: index + 1,
+            description: lesson.description,
+          })),
           documentLink: "",
         },
         {
