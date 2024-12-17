@@ -23,7 +23,7 @@ const AddNewClass2Form = ({
   const [listGeneration, setListGeneration] = useState([]);
   const [listTrainer, setListTrainer] = useState([]);
   const [listSubject, setListSubject] = useState([]);
-  const listSlot = [1, 2];
+  // const listSlot = [1, 2];
 
   const [formData, setFormData] = useState({
     classCode: "",
@@ -414,7 +414,7 @@ const AddNewClass2Form = ({
                   <thead>
                     <tr className="bg-[#6FBC44] text-white">
                       <th className="border border-gray-300 p-2">Code</th>
-                      <th className="border border-gray-300 p-2">Slot</th>
+                      {/* <th className="border border-gray-300 p-2">Slot</th> */}
                       <th className="border border-gray-300 p-2">Trainer</th>
                     </tr>
                   </thead>
@@ -424,23 +424,9 @@ const AddNewClass2Form = ({
                         <td className="border border-gray-300 p-2">
                           {subject.subjectCode}
                         </td>
-                        <td className="border border-gray-300 p-2">
+                        {/* <td className="border border-gray-300 p-2">
                           <select
                             className="w-full border p-1"
-                            // onChange={(e) => {
-                            //   const subjectList = formData?.subjectList?.map(
-                            //     (item: any) => {
-                            //       if (item.subjectId === subject.subjectId) {
-                            //         return {
-                            //           ...item,
-                            //           slot: e.target.value,
-                            //         };
-                            //       }
-                            //       return item;
-                            //     }
-                            //   );
-                            //   setFormData({ ...formData, subjectList });
-                            // }}
                             onChange={(e) => {
                               const selectedSlot = e.target.value; // Slot người dùng vừa chọn
                               const updatedSubjectList =
@@ -475,7 +461,7 @@ const AddNewClass2Form = ({
                               </option>
                             ))}
                           </select>
-                        </td>
+                        </td> */}
                         <td className="border border-gray-300 p-2">
                           <select
                             className="w-full border p-1"
@@ -486,6 +472,7 @@ const AddNewClass2Form = ({
                                     return {
                                       ...item,
                                       trainer: e.target.value,
+                                      slot: 1,
                                     };
                                   }
                                   return item;
