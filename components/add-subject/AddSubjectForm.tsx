@@ -42,6 +42,7 @@ const FormSubject = ({
   handleNext,
   handleImportFile,
   downloadTemplate,
+  hasEdit,
 }: any) => {
   const { values, setFieldValue, errors, validateForm, setTouched } =
     useFormikContext<FormValues>();
@@ -367,6 +368,7 @@ const FormSubject = ({
                 </div>
               )}
             </FieldArray>
+
             <div className="flex mt-10 col-span-2 gap-x-6">
               <button
                 type="button"
@@ -375,12 +377,14 @@ const FormSubject = ({
               >
                 Back
               </button>
-              <button
-                type="submit"
-                className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded mr-10"
-              >
-                Submit
-              </button>
+              {hasEdit && (
+                <button
+                  type="submit"
+                  className="text-white bg-[#6FBC44] font-bold shadow-md hover:shadow-lg hover:bg-[#5da639] py-3 px-6 rounded mr-10"
+                >
+                  Submit
+                </button>
+              )}
             </div>
           </Form>
         </Tab.Panel>
@@ -395,6 +399,23 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
   const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
   const [subjectCodeError, setSubjectCodeError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [hasEdit, setHasEdit] = useState(true);
+
+  const checkHasUpdate = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_API_URL}/subject/check-update/${id}`,
+        {
+          headers: { Authorization: `Bearer ${getJwtToken()}` },
+        }
+      );
+      const isInClass = response.data.data;
+      setHasEdit(!isInClass);
+    } catch (err) {
+      console.error("Error checking has update:", err);
+    }
+  };
 
   const [initialValues, setInitialValues] = useState({
     subjectName: "",
@@ -724,6 +745,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
   useEffect(() => {
     if (id) {
       fetchSubjectDetail();
+      checkHasUpdate();
     }
   }, [id]);
 
@@ -753,6 +775,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
             handleNext={handleNext}
             handleImportFile={handleImportFile}
             downloadTemplate={downloadTemplate}
+            hasEdit={hasEdit}
           />
         </Formik>
       </div>
