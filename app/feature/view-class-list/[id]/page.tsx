@@ -13,6 +13,7 @@ import Grade from "./Grade";
 import TakeAttendanceForm from "./Attendance";
 import WeeklyTimetableForm from "@/components/weekly-timeable/WeeklyTimeableForm";
 import Schedule from "./Schedule";
+import DataVisualizationForm from "@/components/data-visualization/DataVisualizationForm";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("Class Info");
@@ -89,6 +90,8 @@ const Page = () => {
         return <WeeklyTimetableForm id={id} listTrainee={listTrainee} />;
       case "Schedule":
         return <Schedule id={id} startDate={data?.startDate} />;
+      case "Data visualization":
+        return <DataVisualizationForm id={id} />;
       default:
         return null;
     }
@@ -105,6 +108,10 @@ const Page = () => {
     data?.status
   ) {
     listTabs.push("Schedule");
+  }
+
+  if ((role === "ROLE_CLASS_ADMIN" || role === "ROLE_ADMIN") && data?.status) {
+    listTabs.push("Data visualization");
   }
 
   return (

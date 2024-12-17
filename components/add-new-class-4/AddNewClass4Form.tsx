@@ -14,6 +14,8 @@ import { formatDate } from "date-fns";
 import { BASE_API_URL } from "@/config/constant";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { getJwtToken } from "@/lib/utils";
 
 interface Lesson {
   id: number;
@@ -35,119 +37,8 @@ interface AddNewClass4FormProps {
   data: any;
 }
 
-interface LessonFormProps {
-  setSubjects: any;
-  subjects: any;
-  subjectId: number;
-}
-
-export const formatDateRange = (startDate: string, endDate: string) => {
-  // 07:30 - 09:00 28/11/2024
-  return `${formatDate(new Date(startDate), "HH:mm")} - ${formatDate(
-    new Date(endDate),
-    "HH:mm dd/MM/yyyy"
-  )}`;
-};
-
-const LessonForm = ({ setSubjects, subjects, subjectId }: LessonFormProps) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    // order: 0,
-    date: "",
-    description: "",
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const getLastOrder = () => {
-    const subject = subjects.find(
-      (subject: any) => subject.subjectId === subjectId
-    );
-    if (!subject) return 0;
-    return subject.sessionsList.length;
-  };
-
-  const handleAddLesson = async () => {
-    try {
-      const response = await fetch(
-        `${BASE_API_URL}/session-management/add-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            subjectId,
-            lesson: formData.name,
-            sessionOrder: getLastOrder() + 1,
-            // date: "2024-11-24T16:24:17.544Z",
-            description: formData.description,
-          }),
-        }
-      );
-      const res = await response.json();
-      console.log("res", res.data);
-      if (res.code === "Success") {
-        const newSubjects = subjects.map((subject: any) =>
-          subject.subjectId === subjectId
-            ? {
-                ...subject,
-                sessionsList: [...subject.sessionsList, res.data],
-              }
-            : subject
-        );
-        console.log("newSubjects", newSubjects);
-        setSubjects(newSubjects);
-        setFormData({
-          name: "",
-          // order: 0,
-          date: "",
-          description: "",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <div className="p-4 border-t">
-      <div className="flex gap-4 items-center">
-        <Plus size={20} className="cursor-pointer" onClick={handleAddLesson} />
-        <input
-          type="text"
-          name="name"
-          placeholder="Lesson Name:"
-          className="bg-gray-100 p-2 rounded"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        {/* <input
-          type="number"
-          name="order"
-          placeholder="Order"
-          className="bg-gray-100 p-2 rounded w-24"
-          value={formData.order}
-          onChange={handleChange}
-        /> */}
-        <input
-          type="text"
-          name="description"
-          placeholder="Description:"
-          className="bg-gray-100 p-2 rounded flex-1"
-          value={formData.description}
-          onChange={handleChange}
-        />
-      </div>
-    </div>
-  );
-};
-
 const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
   const handleCancel = () => {
-    // setActiveStep(2);
     router.push("/feature/view-class-list");
   };
 
@@ -165,51 +56,6 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
           : subject
       )
     );
-  };
-
-  // const getStartDate = (index: number) => {
-  //   if (!data.startDate) return new Date();
-  //   const date = new Date(data.startDate);
-  //   date.setDate(date.getDate() + index);
-  //   return date;
-  // };
-
-  // const getStartDate = (index: number) => {
-  //   if (!data.startDate) return new Date();
-  //   const date = new Date(data.startDate);
-  //   let daysToAdd = index;
-
-  //   while (true) {
-  //     date.setDate(date.getDate() + daysToAdd);
-
-  //     // Kiểm tra nếu ngày rơi vào thứ 2 đến thứ 6 (weekday)
-  //     const dayOfWeek = date.getDay();
-  //     if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-  //       return date;
-  //     }
-
-  //     // Nếu ngày là thứ Bảy (6) hoặc Chủ Nhật (0), tính lại
-  //     daysToAdd = 1; // Nhảy qua ngày tiếp theo
-  //   }
-  // };
-
-  const getStartDate = (index: number) => {
-    if (!data.startDate) return new Date();
-    const date = new Date(data.startDate);
-
-    let daysAdded = 0; // Số ngày hợp lệ (weekday) đã thêm
-
-    while (daysAdded < index) {
-      date.setDate(date.getDate() + 1); // Tăng ngày lên 1
-
-      // Kiểm tra nếu ngày hiện tại là ngày trong tuần (Monday to Friday)
-      const dayOfWeek = date.getDay();
-      if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-        daysAdded++; // Chỉ tăng đếm nếu là ngày hợp lệ
-      }
-    }
-
-    return date;
   };
 
   const handleUpdateClass = async () => {
@@ -267,63 +113,69 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
     }
   };
 
-  const fetchTimeTableSubject = async (sessionsList: any, slot: any) => {
+  const getTimeTableBySubject = async (sessionList: any) => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${BASE_API_URL}/class-management/get-time-table-session`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            startDate: new Date(data.startDate),
-            slot,
-            sessions: sessionsList.map((s: any) => ({
-              ...s,
-              startDate: new Date(s.startDate),
-            })),
-          }),
+          startDate: data.startDate,
+          sessions: sessionList,
+          slot: 0,
+        },
+        {
+          headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
       );
-      const res = await response.json();
-      console.log("res", res);
-      if (res.code === "Success") {
-        return res.data;
-      }
+      const res = response.data;
+      return res?.data;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchTimeTableSubjects = async () => {
+  const fetchListSubject = async () => {
     try {
-      // tôi muốn từ list subject lấy ra list session của từng subject và gán vào subjects
-      const newSubjects = await Promise.all(
-        data?.subjectList?.map(async (subject: any) => {
-          const sessionsList = await fetchTimeTableSubject(
-            subject.sessionsList,
-            subject.slot
-          );
-          return {
-            ...subject,
-            sessionsList,
-            isExpanded: true,
-          };
-        })
+      const response = await fetch(
+        `${BASE_API_URL}/subject/get-subject-in-class/${data.classId}`,
+        {
+          headers: { Authorization: `Bearer ${getJwtToken()}` },
+        }
       );
-      setSubjects(newSubjects);
+      const res = await response.json();
+
+      // Combine all session lists into a single list
+      const combinedSessionList = res?.data?.reduce(
+        (acc: any[], subject: any) => {
+          return acc.concat(subject.sessionsList);
+        },
+        []
+      );
+
+      // Call getTimeTableBySubject once with the combined session list
+      const combinedSessions = await getTimeTableBySubject(combinedSessionList);
+
+      // Distribute the returned sessions back to their respective subjects
+      let sessionIndex = 0;
+      const subjects = res?.data?.map((subject: any, index: number) => {
+        const sessionsList = subject.sessionsList.map(
+          () => combinedSessions[sessionIndex++]
+        );
+        return {
+          ...subject,
+          isExpanded: index === 0,
+          sessionsList,
+        };
+      });
+
+      setSubjects(subjects);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchTimeTableSubjects();
+    fetchListSubject();
   }, []);
-
-  console.log("subjects", subjects);
-  console.log("data", data);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -416,7 +268,7 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
               <div className="p-3">Description</div>
             </div>
 
-            {subjects.map((subject: any) => (
+            {subjects?.map((subject: any) => (
               <div key={subject.subjectId} className="border rounded-lg mb-4">
                 <div
                   className="flex justify-between items-center p-4 cursor-pointer"
@@ -440,7 +292,11 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
                             {/* {lesson.date
                               ? formatDateRange(lesson.date, lesson.endDate)
                               : "--"} */}
-                            {formatDate(getStartDate(index), "dd/MM/yyyy")}
+                            {/* {formatDate(getStartDate(index), "dd/MM/yyyy")} */}
+                            {formatDate(
+                              new Date(lesson.startDate),
+                              "dd/MM/yyyy"
+                            )}
                           </div>
                           <div className="p-4">{lesson.description}</div>
                         </div>

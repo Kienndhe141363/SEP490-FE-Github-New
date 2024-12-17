@@ -96,7 +96,7 @@ const Session = ({ id, startDate }: Props) => {
         <div className="p-3 border-r border-white">Date</div>
         <div className="p-3">Description</div>
       </div>
-      {subjects.map((subject: any, subjectIndex: any) => (
+      {subjects?.map((subject: any, subjectIndex: any) => (
         <div key={subject.subjectId} className="border rounded-lg mb-4">
           <div
             className="flex justify-between items-center p-4 cursor-pointer"
