@@ -98,28 +98,34 @@ const AddNewClass3Form = ({
       a.href = url;
       a.download = "template-trainee.xlsx";
       a.click();
-      toast.success("Downloaded template successfully")
+      toast.success("Downloaded template successfully");
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleImportTrainee = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportTrainee = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) {
       toast.error("No file selected");
       return;
     }
-  
+
     // Kiểm tra đuôi file phải là .xlsx
-    if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && !file.name.endsWith(".xlsx")) {
+    if (
+      file.type !==
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
+      !file.name.endsWith(".xlsx")
+    ) {
       toast.error("Invalid file format. Please upload an Excel file (.xlsx).");
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("file", file);
-  
+
     try {
       const response = await fetch(
         `${BASE_API_URL}/trainee/import?classId=${data.classId}`,
@@ -129,7 +135,7 @@ const AddNewClass3Form = ({
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
       );
-  
+
       const res = await response.json();
       console.log(res);
       toast.success("File imported successfully!");
@@ -139,61 +145,12 @@ const AddNewClass3Form = ({
       toast.error("Failed to import file");
     }
   };
-  
+
   console.log(listTrainee);
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-[250px] bg-[#6FBC44] h-full flex flex-col">
-        <div className="p-8">
-          <div className="flex items-center gap-2">
-            <img
-              src="/assets/images/fpt-software.png"
-              alt="FPT Software"
-              className="h-8"
-            />
-            <div className="border-l-2 border-white h-8 mx-2"></div>
-            <img
-              src="/assets/images/fpt-academy.png"
-              alt="FPT Academy"
-              className="h-8"
-            />
-          </div>
-        </div>
-
-        <nav className="flex flex-col flex-1 text-white">
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 hover:bg-[#5da33a]"
-          >
-            <Home className="mr-3" /> Home
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 hover:bg-[#5da33a]"
-          >
-            <Users className="mr-3" /> User Management
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 hover:bg-[#5da33a]"
-          >
-            <BookOpen className="mr-3" /> Course Management
-          </a>
-        </nav>
-
-        <div className="mt-auto px-6 py-3 text-white">
-          <a href="#" className="flex items-center hover:text-gray-200">
-            <Settings className="mr-3" /> Setting
-          </a>
-          <a href="#" className="flex items-center mt-3 hover:text-gray-200">
-            <Users className="mr-3" /> My Account
-          </a>
-          <a href="#" className="flex items-center mt-3 hover:text-gray-200">
-            <LogOut className="mr-3" /> Sign out
-          </a>
-        </div>
-      </aside>
+      <aside className="w-[250px] h-screen flex flex-col"></aside>
 
       {/* Main Content */}
       <div className="flex-1 p-8">
@@ -215,9 +172,9 @@ const AddNewClass3Form = ({
           </div>
 
           {/* Main Content */}
-          <div className="mt-6">
+          <div className="mt-6 pb-4">
             {/* Trainee in Class Section */}
-            <div className="mb-6 flex justify-between items-center">
+            <div className="mb-6 flex justify-between items-center ">
               <h2 className="text-2xl font-semibold">Trainee in class</h2>
               <div className="flex gap-4">
                 <button
