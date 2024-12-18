@@ -438,26 +438,28 @@ const ViewUserListForm: React.FC = () => {
                       {user.phone}
                     </td>
                     <td className="border px-6 py-3 text-center">
-                      <div className="flex items-center justify-center">
-                        <div
-                          onClick={() => handleToggleStatus(user.userId)}
-                          className={`flex h-6 w-12 cursor-pointer rounded-full border border-black ${
-                            user.status
-                              ? "justify-end bg-green-500"
-                              : "justify-start bg-black"
-                          } px-[1px]`}
-                        >
-                          <motion.div
-                            className="h-5 w-5 rounded-full bg-white"
-                            layout
-                            transition={{
-                              type: "spring",
-                              stiffness: 700,
-                              damping: 30,
-                            }}
-                          />
+                      {user.role !== "ROLE_ADMIN" && (
+                        <div className="flex items-center justify-center">
+                          <div
+                            onClick={() => handleToggleStatus(user.userId)}
+                            className={`flex h-6 w-12 cursor-pointer rounded-full border border-black ${
+                              user.status
+                                ? "justify-end bg-green-500"
+                                : "justify-start bg-black"
+                            } px-[1px]`}
+                          >
+                            <motion.div
+                              className="h-5 w-5 rounded-full bg-white"
+                              layout
+                              transition={{
+                                type: "spring",
+                                stiffness: 700,
+                                damping: 30,
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </td>
                     <td className="border px-6 py-3 justify-center-center">
                       <div className="flex justify-center">
