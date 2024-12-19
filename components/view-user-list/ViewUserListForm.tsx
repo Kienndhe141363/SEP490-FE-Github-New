@@ -294,17 +294,39 @@ const ViewUserListForm: React.FC = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
         }
       );
 
       // Reload users after successful import
-      searchUsers(new Event("submit") as unknown as React.FormEvent);
-      toast.success("File imported successfully!");
+      // searchUsers(new Event("submit") as unknown as React.FormEvent);
+      // toast.success("File imported successfully!");
+      console.log(response);
+      if (response?.data) {
+        console.log(response.data);
+        // const blob = new Blob([response.data], {
+        //   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        // });
+        const blob = new Blob([new Uint8Array(response.data)], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "ImportResult.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        searchUsers(new Event("submit") as unknown as React.FormEvent);
+        toast.success("File imported successfully!");
+      }
     } catch (err) {
-      console.error("Error importing file:", err);
-      toast.error("Failed to import file");
+      toast.error(
+        (err as any)?.response?.data?.message || "Failed to import file"
+      );
     }
   };
 
