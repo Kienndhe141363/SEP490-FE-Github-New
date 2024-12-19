@@ -83,12 +83,8 @@ const Trainee = ({ id, listTrainee, fetchListTrainee, status }: Props) => {
 
   const fetchListTraineeForAdd = async () => {
     try {
-      const res = await axios.post(
-        `${BASE_API_URL}/user/search`,
-        {
-          roleId: 5,
-          size: 1000,
-        },
+      const res = await axios.get(
+        `${BASE_API_URL}/trainee/get-trainees-without-class`,
         {
           headers: {
             Authorization: `Bearer ${getJwtToken()}`,
@@ -96,7 +92,8 @@ const Trainee = ({ id, listTrainee, fetchListTrainee, status }: Props) => {
         }
       );
       // const data = await response.json();
-      setListTraineeForAdd(res?.data?.data?.dataSource);
+      console.log(res);
+      setListTraineeForAdd(res?.data);
     } catch (error) {
       console.error(error);
     }
