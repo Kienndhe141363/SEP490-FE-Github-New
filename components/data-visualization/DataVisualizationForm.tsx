@@ -4,6 +4,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, Doughnut } from "react-chartjs-2";
 import { BASE_API_URL } from "@/config/constant";
 import { getJwtToken } from "@/lib/utils";
+import AttendanceOverview from "./AttendanceOverview";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -13,8 +14,6 @@ interface DataVisualizationFormProps {
 
 const DataVisualizationForm = ({ id }: DataVisualizationFormProps) => {
   const [selectedSubject, setSelectedSubject] = useState("TOTAL");
-  const [currentDateIndex, setCurrentDateIndex] = useState(0);
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [listSubject, setListSubject] = useState<any[]>([]);
 
   const fetchListSubject = async () => {
@@ -33,54 +32,6 @@ const DataVisualizationForm = ({ id }: DataVisualizationFormProps) => {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  // Array of dates for navigation (you can modify this as needed)
-  const dates = [
-    new Date(2024, 0, 15), // Example dates
-    new Date(2024, 0, 16),
-    new Date(2024, 0, 17),
-  ];
-
-  useEffect(() => {
-    // Update current date when currentDateIndex changes
-    if (currentDateIndex >= 0 && currentDateIndex < dates.length) {
-      setCurrentDate(dates[currentDateIndex]);
-    }
-  }, [currentDateIndex]);
-
-  // Format date function
-  const formatDate = (date: Date) => {
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const day = days[date.getDay()];
-    const formattedDate = date
-      .toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace(/\//g, "-");
-    return `${day}, ${formattedDate}`;
-  };
-
-  // Daily Attendance Data
-  const attendanceData = {
-    labels: ["A", "An", "P", "L", "Ln", "E", "En"],
-    datasets: [
-      {
-        data: [0, 0, 100, 0, 0, 0, 0],
-        backgroundColor: [
-          "#F7A23B",
-          "#FD1414",
-          "#0FCA7A",
-          "#FFFF00",
-          "#B7FD14",
-          "#1456FD",
-          "#8B60D0",
-        ],
-        borderWidth: 0,
-      },
-    ],
   };
 
   // Class Performance Data
@@ -151,21 +102,6 @@ const DataVisualizationForm = ({ id }: DataVisualizationFormProps) => {
     },
   };
 
-  const doughnutOptions = {
-    plugins: {
-      legend: {
-        display: true,
-        position: "right" as const,
-        labels: {
-          usePointStyle: true,
-          pointStyle: "circle",
-        },
-      },
-    },
-    cutout: "70%",
-    maintainAspectRatio: false,
-  };
-
   const progressOptions = {
     plugins: {
       legend: {
@@ -180,14 +116,6 @@ const DataVisualizationForm = ({ id }: DataVisualizationFormProps) => {
     rotation: 270,
   };
 
-  const handlePrevious = () => {
-    setCurrentDateIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
-
-  const handleNext = () => {
-    setCurrentDateIndex((prev) => (prev < dates.length - 1 ? prev + 1 : prev));
-  };
-
   useEffect(() => {
     fetchListSubject();
   }, []);
@@ -197,35 +125,7 @@ const DataVisualizationForm = ({ id }: DataVisualizationFormProps) => {
 
   return (
     <div className="grid grid-cols-2 gap-6">
-      <div className="bg-white p-4 rounded-lg relative">
-        {/* Added date display ABOVE the chart */}
-        <div className="flex justify-center items-center mb-2">
-          <button
-            onClick={handlePrevious}
-            disabled={currentDateIndex === 0}
-            className="mr-4 text-xl font-bold hover:text-gray-600 disabled:opacity-50"
-          >
-            &#60;
-          </button>
-          <p className="text-sm font-semibold">{formatDate(currentDate)}</p>
-          <button
-            onClick={handleNext}
-            disabled={currentDateIndex === dates.length - 1}
-            className="ml-4 text-xl font-bold hover:text-gray-600 disabled:opacity-50"
-          >
-            &#62;
-          </button>
-        </div>
-
-        <div className="h-[200px] mt-4">
-          <Pie data={attendanceData} options={chartOptions} />
-        </div>
-
-        <p className="text-center mt-2 text-sm">
-          Chart Title: Daily Attendance Overview
-        </p>
-      </div>
-
+      <AttendanceOverview id={id} />
       {/* Class Performance Overview */}
       <div className="bg-white p-4 rounded-lg">
         <div className="flex justify-end mb-4">
