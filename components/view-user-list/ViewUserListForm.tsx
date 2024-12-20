@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { Home, Users, BookOpen, Settings, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -288,23 +286,28 @@ const ViewUserListForm: React.FC = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${BASE_API_URL}/user/management/import`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_API_URL}/user/management/import`, {
+        method: "POST",
+        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // Reload users after successful import
-      searchUsers(new Event("submit") as unknown as React.FormEvent);
-      toast.success("File imported successfully!");
+      const contentType = response.headers.get("Content-Type");
+
+      if (contentType?.includes("application/json")) {
+        toast.success("File imported successfully!");
+      } else {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "import-user-error.xlsx";
+        a.click();
+      }
     } catch (err) {
-      console.error("Error importing file:", err);
-      toast.error("Failed to import file");
+      toast.error(
+        (err as any)?.response?.data?.message || "Failed to import file"
+      );
     }
   };
 
