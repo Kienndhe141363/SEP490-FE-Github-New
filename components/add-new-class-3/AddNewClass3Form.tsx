@@ -135,14 +135,22 @@ const AddNewClass3Form = ({
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
       );
-
-      const res = await response.json();
-      console.log(res);
-      toast.success("File imported successfully!");
-      fetchListTrainee(); // Reload trainee list after successful import
-    } catch (error) {
-      console.error("Error importing file:", error);
-      toast.error("Failed to import file");
+      const contentType = response.headers.get("Content-Type");
+      if (contentType?.includes("application/json")) {
+        toast.success("File imported successfully!");
+        fetchListTrainee(); // Reload trainee list after successful import
+      } else {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "import-trainee-error.xlsx";
+        a.click();
+      }
+    } catch (err) {
+      toast.error(
+        (err as any)?.response?.data?.message || "Failed to import file"
+      );
     }
   };
 
