@@ -89,7 +89,7 @@ const AttendanceOverview = (props: Props) => {
       const res = await response.json();
       if (res) {
         setListSchedules(res);
-        setSelectedDate(res[0]);
+        setSelectedDate(res[0]?.scheduleDetailId);
       }
     } catch (error) {
       console.error(error);
@@ -99,7 +99,7 @@ const AttendanceOverview = (props: Props) => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${BASE_API_URL_2}/data-visualization/attendance/${selectedDate?.scheduleDetailId}`,
+        `${BASE_API_URL_2}/data-visualization/attendance/${selectedDate}`,
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
@@ -121,8 +121,8 @@ const AttendanceOverview = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    if (selectedDate?.scheduleDetailId) fetchData();
-  }, [selectedDate?.scheduleDetailId]);
+    if (selectedDate) fetchData();
+  }, [selectedDate]);
 
   console.log("listSchedules", listSchedules);
   console.log("selectedDate", selectedDate);
@@ -133,12 +133,15 @@ const AttendanceOverview = (props: Props) => {
       {/* Added date display ABOVE the chart */}
       <div className="flex justify-center items-center mb-2">
         <select
-          value={formatDate(new Date(selectedDate?.date))}
-          onChange={(e) => setSelectedDate(new Date(e.target.value))}
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
           className="border border-gray-300 rounded-md p-1"
         >
           {listSchedules.map((schedule: any) => (
-            <option key={schedule.scheduleDetailId} value={schedule}>
+            <option
+              key={schedule.scheduleDetailId}
+              value={schedule.scheduleDetailId}
+            >
               {formatDate(new Date(schedule.date))}
             </option>
           ))}
