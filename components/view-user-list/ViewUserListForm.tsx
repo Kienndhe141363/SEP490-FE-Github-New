@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { Home, Users, BookOpen, Settings, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -288,40 +286,23 @@ const ViewUserListForm: React.FC = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        `${BASE_API_URL}/user/management/import`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            // "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_API_URL}/user/management/import`, {
+        method: "POST",
+        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // Reload users after successful import
-      // searchUsers(new Event("submit") as unknown as React.FormEvent);
-      // toast.success("File imported successfully!");
-      console.log(response);
-      if (response?.data) {
-        console.log(response.data);
-        // const blob = new Blob([response.data], {
-        //   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        // });
-        const blob = new Blob([new Uint8Array(response.data)], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+      const contentType = response.headers.get("Content-Type");
 
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "ImportResult.xlsx");
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      } else {
-        searchUsers(new Event("submit") as unknown as React.FormEvent);
+      if (contentType?.includes("application/json")) {
         toast.success("File imported successfully!");
+      } else {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "import-user-error.xlsx";
+        a.click();
       }
     } catch (err) {
       toast.error(
