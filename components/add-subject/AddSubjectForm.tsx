@@ -454,10 +454,10 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
     lessonList: Yup.array().of(
       Yup.object({
         lesson: Yup.string().required("Lesson is required"),
-        sessionOrder: Yup.number()
-          .min(1, "Session Order must be at least 1")
-          .required("Session Order is required"),
-        description: Yup.string().optional(),
+        sessionOrder: Yup.number().nullable(),
+        // .min(1, "Session Order must be at least 1")
+        // .required("Session Order is required"),
+        description: Yup.string().nullable(),
       })
     ),
   });
@@ -639,54 +639,39 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${BASE_API_URL}/session-management/import-session`,
-        formData,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          method: "POST",
+          body: formData,
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const errors = response.data.errors || [];
-      if (errors.length) {
-        errors.forEach((err: { code: any; message: any }) => {
-          switch (err.code) {
-            case "ERR045":
-              toast.error("ERR045: Lesson can't not be empty.");
-              break;
-            case "ERR046":
-              toast.error("ERR046: Order can't not be empty.");
-              break;
-            case "ERR047":
-              toast.error("ERR047: Order already exist.");
-              break;
-            case "ERR048":
-              toast.error("ERR048: Order number must be at least 1.");
-              break;
-            case "ERR041":
-              toast.error("ERR041: Failed to upload.");
-              break;
-            case "ERR042":
-              toast.error("ERR042: Session expired.");
-              break;
-            default:
-              toast.error(`Unknown error: ${err.message}`);
-          }
-        });
-      } else {
-        const newLessonList = response.data.data.validSessions;
+      const contentType = response.headers.get("Content-Type");
+
+      if (contentType?.includes("application/json")) {
+        const data = await response.json();
+        console.log("data", data);
+        const newLessonList = data[0];
         console.log("lessonList", newLessonList);
         setInitialValues((prev) => ({
           ...prev,
           lessonList: [...prev.lessonList, ...newLessonList],
         }));
-        toast.success("Import successful!");
+        toast.success("File imported successfully!");
+      } else {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "import-session-error.xlsx";
+        a.click();
       }
-    } catch (error) {
-      toast.error("Import failed. Please try again.");
+    } catch (err) {
+      toast.error(
+        (err as any)?.response?.data?.message || "Failed to import file"
+      );
     }
   };
 
