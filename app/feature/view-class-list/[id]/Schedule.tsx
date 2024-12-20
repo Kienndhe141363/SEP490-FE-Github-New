@@ -85,7 +85,7 @@ const Schedule = ({ id, startDate }: Props) => {
       const res = await response.json();
 
       // Combine all session lists into a single list
-      const combinedSessionList = res?.data?.reduce(
+      const combinedSessionList = res?.data?.listSubject?.reduce(
         (acc: any[], subject: any) => {
           return acc.concat(subject.sessionsList);
         },
@@ -97,16 +97,18 @@ const Schedule = ({ id, startDate }: Props) => {
 
       // Distribute the returned sessions back to their respective subjects
       let sessionIndex = 0;
-      const subjects = res?.data?.map((subject: any, index: number) => {
-        const sessionsList = subject.sessionsList.map(
-          () => combinedSessions[sessionIndex++]
-        );
-        return {
-          ...subject,
-          isExpanded: index === 0,
-          sessionsList,
-        };
-      });
+      const subjects = res?.data?.listSubject?.map(
+        (subject: any, index: number) => {
+          const sessionsList = subject.sessionsList.map(
+            () => combinedSessions[sessionIndex++]
+          );
+          return {
+            ...subject,
+            isExpanded: index === 0,
+            sessionsList,
+          };
+        }
+      );
 
       setSubjects(subjects);
     } catch (error) {
@@ -125,6 +127,7 @@ const Schedule = ({ id, startDate }: Props) => {
           <tr className="w-full bg-[#6FBC44] text-white rounded-t-lg">
             <th className="p-3 border-r border-white">No</th>
             <th className="p-3 border-r border-white">Lesson</th>
+            <th className="p-3 border-r border-white">Trainer</th>
             <th className="p-3 border-r border-white">Date</th>
             <th className="p-3 border-r border-white">Description</th>
             <th className="p-3 border-r border-white">Status</th>
@@ -148,6 +151,7 @@ const Schedule = ({ id, startDate }: Props) => {
                   <tr key={index} className="border-t">
                     <td className="p-4 border-r">{index + 1}</td>
                     <td className="p-4 border-r">{lesson.lesson}</td>
+                    <td className="p-4 border-r">{lesson.trainer}</td>
                     <td className="p-4 border-r">
                       {formatDate(new Date(lesson.startDate), "dd/MM/yyyy")}
                     </td>

@@ -39,7 +39,7 @@ const Performance = ({ id }: Props) => {
       );
       const res = await response.json();
       if (res?.data) {
-        setListSubject(res?.data);
+        setListSubject(res?.data?.listSubject);
         setSelectedSubject(res?.data[0]?.subjectId);
       }
     } catch (error) {

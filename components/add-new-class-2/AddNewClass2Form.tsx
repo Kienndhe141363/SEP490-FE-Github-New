@@ -105,7 +105,7 @@ const AddNewClass2Form = ({
         }
       );
       const res = await response.json();
-      setListSubject(res?.data);
+      setListSubject(res?.data?.listSubject);
       setFormData({
         ...formData,
         classCode: data.classCode || "",

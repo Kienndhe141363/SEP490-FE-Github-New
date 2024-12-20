@@ -54,7 +54,7 @@ const Session = ({ id, startDate }: Props) => {
       const res = await response.json();
 
       // Combine all session lists into a single list
-      const combinedSessionList = res?.data?.reduce(
+      const combinedSessionList = res?.data?.listSubject?.reduce(
         (acc: any[], subject: any) => {
           return acc.concat(subject.sessionsList);
         },
@@ -66,16 +66,18 @@ const Session = ({ id, startDate }: Props) => {
 
       // Distribute the returned sessions back to their respective subjects
       let sessionIndex = 0;
-      const subjects = res?.data?.map((subject: any, index: number) => {
-        const sessionsList = subject.sessionsList.map(
-          () => combinedSessions[sessionIndex++]
-        );
-        return {
-          ...subject,
-          isExpanded: index === 0,
-          sessionsList,
-        };
-      });
+      const subjects = res?.data?.listSubject?.map(
+        (subject: any, index: number) => {
+          const sessionsList = subject.sessionsList.map(
+            () => combinedSessions[sessionIndex++]
+          );
+          return {
+            ...subject,
+            isExpanded: index === 0,
+            sessionsList,
+          };
+        }
+      );
 
       setSubjects(subjects);
     } catch (error) {

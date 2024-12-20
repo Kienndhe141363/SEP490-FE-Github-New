@@ -72,7 +72,7 @@ const Grade = ({ id }: Props) => {
       const res = await response.json();
       if (res?.data) {
         const listSubjectScheme = await Promise.all(
-          res?.data.map(async (subject: any) => {
+          res?.data?.listSubject.map(async (subject: any) => {
             const schemes = await fetchListSchemesBySubject(subject.subjectId);
             return schemes;
           })

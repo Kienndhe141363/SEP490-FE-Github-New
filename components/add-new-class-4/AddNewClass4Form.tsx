@@ -144,7 +144,7 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
       const res = await response.json();
 
       // Combine all session lists into a single list
-      const combinedSessionList = res?.data?.reduce(
+      const combinedSessionList = res?.data?.listSubject?.reduce(
         (acc: any[], subject: any) => {
           return acc.concat(subject.sessionsList);
         },
