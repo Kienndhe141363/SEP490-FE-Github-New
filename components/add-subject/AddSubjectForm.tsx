@@ -639,16 +639,6 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
     formData.append("file", file);
 
     try {
-      // const response = await axios.post(
-      //   `${BASE_API_URL}/session-management/import-session`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
       const response = await fetch(
         `${BASE_API_URL}/session-management/import-session`,
         {
@@ -657,14 +647,6 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      // const newLessonList = response.data.data.validSessions;
-      // console.log("lessonList", newLessonList);
-      // setInitialValues((prev) => ({
-      //   ...prev,
-      //   lessonList: [...prev.lessonList, ...newLessonList],
-      // }));
-      // toast.success("Import successful!");
 
       const contentType = response.headers.get("Content-Type");
 
@@ -683,7 +665,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "import-user-error.xlsx";
+        a.download = "import-session-error.xlsx";
         a.click();
       }
     } catch (err) {
