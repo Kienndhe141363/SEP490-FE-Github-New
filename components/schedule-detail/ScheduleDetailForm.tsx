@@ -1,15 +1,39 @@
 "use client";
-import React, { useState } from "react";
+import { BASE_API_URL } from "@/config/constant";
+import { getJwtToken } from "@/lib/utils";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-const trainers = ["HuyLT7", "HieuHT24", "LongNQ29", "PhuongDT98"]; // Danh sách các Trainer
+const ScheduleForm = ({ schedule, setScheduleSelected }: any) => {
+  const [listTrainer, setListTrainer] = useState([]);
 
-const ScheduleForm = () => {
   const [formData, setFormData] = useState({
-    subject: "Java",
-    session: "Lesson2",
+    subjectName: "Java",
+    lesson: "Lesson2",
     trainer: "HuyLT7",
     date: "2024-12-09", // Định dạng ngày (YYYY-MM-DD) cho input type="date"
+    startDate: "2024-12-09",
+    endDate: "2024-12-09",
   });
+  console.log(listTrainer);
+  const fetchListTrainer = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_API_URL}/class-management/get-trainer-for-class`,
+        {
+          startDate: schedule.startDate,
+          endDate: schedule.endDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${getJwtToken()}` },
+        }
+      );
+      const res = response.data;
+      setListTrainer(res?.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Hàm xử lý khi thay đổi giá trị trong form
   const handleChange = (e: { target: { name: any; value: any } }) => {
@@ -24,11 +48,26 @@ const ScheduleForm = () => {
 
   // Hàm xử lý khi nhấn nút "Cancel"
   const handleCancel = () => {
+    setScheduleSelected(null);
     alert("Đã hủy thao tác");
   };
 
+  useEffect(() => {
+    if (schedule) {
+      setFormData({
+        subjectName: schedule.subjectName,
+        lesson: schedule.lesson,
+        trainer: schedule.trainer,
+        date: schedule.date,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+      });
+      fetchListTrainer();
+    }
+  }, [schedule]);
+
   return (
-    <div className="min-h-screen flex-1 ml-[228px] bg-[#EFF5EB] p-8 py-10">
+    <div className="min-h-screen flex-1  bg-[#EFF5EB] p-8 py-10">
       <h2 className="text-4xl font-bold p-4 mb-16">Schedule Detail</h2>
       <div className=" flex items-center justify-center bg-[#EFF5EB] ">
         <div className="bg-white p-8 rounded-md shadow-md md:w-11/12 ">
@@ -39,8 +78,8 @@ const ScheduleForm = () => {
               </label>
               <input
                 type="text"
-                name="subject"
-                value={formData.subject}
+                name="subjectName"
+                value={formData.subjectName}
                 readOnly
                 className="border rounded w-full p-2 bg-gray-200"
               />
@@ -51,8 +90,8 @@ const ScheduleForm = () => {
               </label>
               <input
                 type="text"
-                name="session"
-                value={formData.session}
+                name="lesson"
+                value={formData.lesson}
                 readOnly
                 className="border rounded w-full p-2 bg-gray-200"
               />
@@ -67,9 +106,9 @@ const ScheduleForm = () => {
                 onChange={handleChange}
                 className="border rounded w-full p-2"
               >
-                {trainers.map((trainer, index) => (
-                  <option key={index} value={trainer}>
-                    {trainer}
+                {listTrainer.map((trainer, index) => (
+                  <option key={index} value={trainer.account}>
+                    {trainer.account}
                   </option>
                 ))}
               </select>
@@ -79,7 +118,7 @@ const ScheduleForm = () => {
               <input
                 type="date"
                 name="date"
-                value={formData.date}
+                value={new Date(formData.startDate).toISOString().split("T")[0]}
                 onChange={handleChange}
                 className="border rounded w-full p-2"
               />

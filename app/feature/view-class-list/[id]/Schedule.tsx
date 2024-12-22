@@ -1,3 +1,4 @@
+import ScheduleForm from "@/components/schedule-detail/ScheduleDetailForm";
 import { BASE_API_URL } from "@/config/constant";
 import { getJwtToken } from "@/lib/utils";
 import axios from "axios";
@@ -13,6 +14,7 @@ type Props = {
 
 const Schedule = ({ id, startDate }: Props) => {
   const [subjects, setSubjects] = useState<any>([]);
+  const [scheduleSelected, setScheduleSelected] = useState<any>(null);
 
   const toggleSubject = (subjectId: number) => {
     setSubjects(
@@ -122,52 +124,67 @@ const Schedule = ({ id, startDate }: Props) => {
 
   return (
     <div>
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr className="w-full bg-[#6FBC44] text-white rounded-t-lg">
-            <th className="p-3 border-r border-white">No</th>
-            <th className="p-3 border-r border-white">Lesson</th>
-            <th className="p-3 border-r border-white">Trainer</th>
-            <th className="p-3 border-r border-white">Date</th>
-            <th className="p-3 border-r border-white">Description</th>
-            <th className="p-3 border-r border-white">Status</th>
-            <th className="p-3">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {subjects.map((subject: any, subjectIndex: any) => (
-            <React.Fragment key={subject.subjectId}>
-              <tr
-                className="cursor-pointer"
-                onClick={() => toggleSubject(subject.subjectId)}
-              >
-                <td colSpan={6} className="p-4 font-bold flex">
-                  {subject.subjectName}{" "}
-                  {subject?.isExpanded ? <ChevronUp /> : <ChevronDown />}
-                </td>
-              </tr>
-              {subject?.isExpanded &&
-                subject?.sessionsList?.map((lesson: any, index: number) => (
-                  <tr key={index} className="border-t">
-                    <td className="p-4 border-r">{index + 1}</td>
-                    <td className="p-4 border-r">{lesson.lesson}</td>
-                    <td className="p-4 border-r">{lesson.trainer}</td>
-                    <td className="p-4 border-r">
-                      {formatDate(new Date(lesson.startDate), "dd/MM/yyyy")}
-                    </td>
-                    <td className="p-4 border-r">{lesson.description}</td>
-                    {getStatusByDate(lesson.startDate)}
-                    <td className="p-4">
-                      {hasEdit(lesson.startDate) && (
-                        <FiEdit className="w-6 h-6 text-green-600 hover:text-green-800 cursor-pointer" />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+      {scheduleSelected ? (
+        <ScheduleForm
+          schedule={scheduleSelected}
+          setScheduleSelected={setScheduleSelected}
+        />
+      ) : (
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr className="w-full bg-[#6FBC44] text-white rounded-t-lg">
+              <th className="p-3 border-r border-white">No</th>
+              <th className="p-3 border-r border-white">Lesson</th>
+              <th className="p-3 border-r border-white">Trainer</th>
+              <th className="p-3 border-r border-white">Date</th>
+              <th className="p-3 border-r border-white">Description</th>
+              <th className="p-3 border-r border-white">Status</th>
+              <th className="p-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {subjects.map((subject: any, subjectIndex: any) => (
+              <React.Fragment key={subject.subjectId}>
+                <tr
+                  className="cursor-pointer"
+                  onClick={() => toggleSubject(subject.subjectId)}
+                >
+                  <td colSpan={6} className="p-4 font-bold flex">
+                    {subject.subjectName}{" "}
+                    {subject?.isExpanded ? <ChevronUp /> : <ChevronDown />}
+                  </td>
+                </tr>
+                {subject?.isExpanded &&
+                  subject?.sessionsList?.map((lesson: any, index: number) => (
+                    <tr key={index} className="border-t">
+                      <td className="p-4 border-r">{index + 1}</td>
+                      <td className="p-4 border-r">{lesson.lesson}</td>
+                      <td className="p-4 border-r">{lesson.trainer}</td>
+                      <td className="p-4 border-r">
+                        {formatDate(new Date(lesson.startDate), "dd/MM/yyyy")}
+                      </td>
+                      <td className="p-4 border-r">{lesson.description}</td>
+                      {getStatusByDate(lesson.startDate)}
+                      <td className="p-4">
+                        {hasEdit(lesson.startDate) && (
+                          <FiEdit
+                            className="w-6 h-6 text-green-600 hover:text-green-800 cursor-pointer"
+                            onClick={() =>
+                              setScheduleSelected({
+                                ...lesson,
+                                subjectName: subject.subjectName,
+                              })
+                            }
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
