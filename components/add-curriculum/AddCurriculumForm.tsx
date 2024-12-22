@@ -30,19 +30,19 @@ const AddCurriculumForm: React.FC = () => {
       router.push("/authen/login");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${BASE_API_URL}/subject/search`,
-        { page: 0, size: 100, orderBy: 'id', sortDirection: 'asc' },
+        { page: 0, size: 100, orderBy: "id", sortDirection: "asc" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       // Lọc các subject có status === true
       const activeSubjects = (response.data.data.dataSource || []).filter(
         (subject: Subject) => subject.status === true
       );
-  
+
       setAllSubjects(activeSubjects);
     } catch (err) {
       toast.error("Error fetching subjects.");
@@ -53,7 +53,6 @@ const AddCurriculumForm: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchSubjects();
@@ -72,14 +71,13 @@ const AddCurriculumForm: React.FC = () => {
             .required("Weight is required"),
         })
       )
-      .test(
-        "total-weight",
-        "Total weight must equal 100",
-        (subjects) => {
-          const totalWeight = subjects?.reduce((sum, subject) => sum + (subject.weight || 0), 0);
-          return totalWeight === 100;
-        }
-      ),
+      .test("total-weight", "Total weight must equal 100", (subjects) => {
+        const totalWeight = subjects?.reduce(
+          (sum, subject) => sum + (subject.weight || 0),
+          0
+        );
+        return totalWeight === 100;
+      }),
   });
 
   const handleSubmit = async (values: any) => {
@@ -93,6 +91,8 @@ const AddCurriculumForm: React.FC = () => {
       const normalizedSubjects = values.subjects.map((subject: any) => ({
         ...subject,
         percentage: subject.weight / 100,
+        subjectId: allSubjects.find((s) => s.subjectCode === subject.code)
+          ?.subjectId,
       }));
 
       await axios.post(
@@ -121,9 +121,7 @@ const AddCurriculumForm: React.FC = () => {
       <div className="flex justify-between items-center p-8">
         <h2 className="text-4xl font-bold">Add New Curriculum</h2>
       </div>
-      {error &&
-        <FormError message={error} />
-      }
+      {error && <FormError message={error} />}
       <div className="bg-white rounded-[40px] p-12 mx-auto">
         <Formik
           initialValues={{
@@ -138,7 +136,7 @@ const AddCurriculumForm: React.FC = () => {
           {({ values, setFieldValue, errors }) => (
             <Form className="grid grid-cols-2 gap-x-16 gap-y-8">
               <div>
-              <label className="block font-bold text-3xl mb-2">
+                <label className="block font-bold text-3xl mb-2">
                   Curriculum Name<span className="text-red-500">*</span>
                 </label>
                 <Field
@@ -146,11 +144,17 @@ const AddCurriculumForm: React.FC = () => {
                   placeholder="Input Curriculum Name"
                   className="p-2.5 w-full border border-[#D4CBCB] h-11 rounded"
                 />
-                <ErrorMessage name="curriculumName" component="div" className="text-red-500" />
+                <ErrorMessage
+                  name="curriculumName"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
 
               <div>
-                <label className=" font-bold text-3xl mb-2 hidden">Status</label>
+                <label className=" font-bold text-3xl mb-2 hidden">
+                  Status
+                </label>
                 <div className="flex items-center space-x-4 mt-2">
                   <label className=" items-center hidden">
                     <Field
@@ -176,116 +180,145 @@ const AddCurriculumForm: React.FC = () => {
                     <span className="text-2xl">Inactive</span>
                   </label>
                 </div>
-                <ErrorMessage name="status" component="div" className="text-red-500" />
+                <ErrorMessage
+                  name="status"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
 
               <div>
-                <label className="block font-bold text-3xl mb-2">Description</label>
+                <label className="block font-bold text-3xl mb-2">
+                  Description
+                </label>
                 <Field
                   as="textarea"
                   name="descriptions"
                   placeholder="Input Description"
                   className="p-2.5 w-full border border-[#D4CBCB] h-20 rounded"
                 />
-                <ErrorMessage name="descriptions" component="div" className="text-red-500" />
+                <ErrorMessage
+                  name="descriptions"
+                  component="div"
+                  className="text-red-500"
+                />
               </div>
 
               <div>
-  <label className="block font-bold text-3xl mb-2">Subject List</label>
-  <FieldArray name="subjects">
-    {({ remove, push }) => (
-      <div>
-        <table className="w-full border border-[#D4CBCB] text-center">
-          <thead>
-            <tr className="bg-[#6FBC44] text-white">
-              <th className="px-4 py-3 uppercase tracking-wider">Subject Code</th>
-              <th className="px-4 py-3 uppercase tracking-wider">Weight(%)</th>
-              <th className="px-4 py-3 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-          {values.subjects.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="text-center py-4 text-red-500">
-                  Add subject to curriculum
-                </td>
-              </tr>
-            ) : (
-              values.subjects.map((subject, index) => {
-                const selectedCodes = values.subjects.map((s) => s.code);
-                const availableSubjects = allSubjects.filter(
-                  (subj) =>
-                    subj.subjectCode === subject.code ||
-                    !selectedCodes.includes(subj.subjectCode)
-                );
+                <label className="block font-bold text-3xl mb-2">
+                  Subject List
+                </label>
+                <FieldArray name="subjects">
+                  {({ remove, push }) => (
+                    <div>
+                      <table className="w-full border border-[#D4CBCB] text-center">
+                        <thead>
+                          <tr className="bg-[#6FBC44] text-white">
+                            <th className="px-4 py-3 uppercase tracking-wider">
+                              Subject Code
+                            </th>
+                            <th className="px-4 py-3 uppercase tracking-wider">
+                              Weight(%)
+                            </th>
+                            <th className="px-4 py-3 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {values.subjects.length === 0 ? (
+                            <tr>
+                              <td
+                                colSpan={3}
+                                className="text-center py-4 text-red-500"
+                              >
+                                Add subject to curriculum
+                              </td>
+                            </tr>
+                          ) : (
+                            values.subjects.map((subject, index) => {
+                              const selectedCodes = values.subjects.map(
+                                (s) => s.code
+                              );
+                              const availableSubjects = allSubjects.filter(
+                                (subj) =>
+                                  subj.subjectCode === subject.code ||
+                                  !selectedCodes.includes(subj.subjectCode)
+                              );
 
-
-              return (
-                <tr key={index} className="border-b border-[#D4CBCB]">
-                  <td className="px-4 py-2">
-                    <Field
-                      as="select"
-                      name={`subjects[${index}].code`}
-                      className="w-full p-2 border border-[#D4CBCB] rounded focus:outline-none"
-                    >
-                      <option value="">Select Subject</option>
-                      {availableSubjects.map((subj) => (
-                        <option key={subj.subjectId} value={subj.subjectCode}>
-                          {subj.subjectCode}
-                        </option>
-                      ))}
-                    </Field>
-                    <ErrorMessage
-                      name={`subjects[${index}].code`}
-                      component="div"
-                      className="text-red-500 text-sm mt-1"
-                    />
-                  </td>
-                  <td className="px-4 py-2">
-                    <Field
-                      name={`subjects[${index}].weight`}
-                      type="number"
-                      className="w-full p-2 border border-[#D4CBCB] rounded focus:outline-none"
-                    />
-                    <ErrorMessage
-                      name={`subjects[${index}].weight`}
-                      component="div"
-                      className="text-red-500 text-sm mt-1"
-                    />
-                  </td>
-                  <td className="px-4 py-2">
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="w-6 h-6" />
-                    </button>
-                  </td>
-                </tr>
-              );
-            }))}
-          </tbody>
-        </table>
-        {errors.subjects && typeof errors.subjects === "string" && (
-          <div className="text-red-500 text-center mt-2">
-            {errors.subjects}
-          </div>
-        )}
-        {values.subjects.length < allSubjects.length && (
-          <button
-            type="button"
-            onClick={() => push({ code: "", weight: 0 })}
-            className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
-          >
-            + Add Subject
-          </button>
-        )}
-      </div>
-    )}
-  </FieldArray>
-</div>
-
+                              return (
+                                <tr
+                                  key={index}
+                                  className="border-b border-[#D4CBCB]"
+                                >
+                                  <td className="px-4 py-2">
+                                    <Field
+                                      as="select"
+                                      name={`subjects[${index}].code`}
+                                      className="w-full p-2 border border-[#D4CBCB] rounded focus:outline-none"
+                                    >
+                                      <option value="">Select Subject</option>
+                                      {availableSubjects.map((subj) => (
+                                        <option
+                                          key={subj.subjectId}
+                                          value={subj.subjectCode}
+                                        >
+                                          {subj.subjectCode}
+                                        </option>
+                                      ))}
+                                    </Field>
+                                    <ErrorMessage
+                                      name={`subjects[${index}].code`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </td>
+                                  <td className="px-4 py-2">
+                                    <Field
+                                      name={`subjects[${index}].weight`}
+                                      type="number"
+                                      className="w-full p-2 border border-[#D4CBCB] rounded focus:outline-none"
+                                    />
+                                    <ErrorMessage
+                                      name={`subjects[${index}].weight`}
+                                      component="div"
+                                      className="text-red-500 text-sm mt-1"
+                                    />
+                                  </td>
+                                  <td className="px-4 py-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => remove(index)}
+                                      className="text-red-500 hover:text-red-700"
+                                    >
+                                      <Trash2 className="w-6 h-6" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                      {errors.subjects &&
+                        typeof errors.subjects === "string" && (
+                          <div className="text-red-500 text-center mt-2">
+                            {errors.subjects}
+                          </div>
+                        )}
+                      {values.subjects.length < allSubjects.length && (
+                        <button
+                          type="button"
+                          onClick={() => push({ code: "", weight: 0 })}
+                          className="mt-4 bg-[#6FBC44] text-white font-bold py-2 px-4 rounded shadow-md hover:shadow-lg hover:bg-[#5da639]"
+                        >
+                          + Add Subject
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </FieldArray>
+              </div>
 
               <div className="flex mt-10 col-span-2">
                 <button
