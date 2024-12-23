@@ -15,7 +15,7 @@ const ScheduleForm = ({ schedule, setScheduleSelected }: any) => {
     startDate: "2024-12-09",
     endDate: "2024-12-09",
   });
-  console.log(listTrainer);
+  console.log(formData, "formData");
   const fetchListTrainer = async () => {
     try {
       const response = await axios.post(

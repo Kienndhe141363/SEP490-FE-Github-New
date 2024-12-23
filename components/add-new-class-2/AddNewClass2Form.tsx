@@ -116,7 +116,7 @@ const AddNewClass2Form = ({
         note: data.note || "",
         subjectList: data?.subjectList?.length
           ? data?.subjectList
-          : res?.data?.map((subject: any) => ({
+          : res?.data?.listSubject?.map((subject: any) => ({
               subjectId: subject.subjectId,
               subjectName: subject.subjectName,
               createdDate: subject.createdDate,
