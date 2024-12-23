@@ -41,7 +41,7 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
   const handleCancel = () => {
     router.push("/feature/view-class-list");
   };
-
+  console.log(data);
   const activeTab = "Session";
 
   const [subjects, setSubjects] = useState<any>([]);
@@ -156,16 +156,18 @@ const AddNewClass4Form = ({ setActiveStep, data }: AddNewClass4FormProps) => {
 
       // Distribute the returned sessions back to their respective subjects
       let sessionIndex = 0;
-      const subjects = res?.data?.map((subject: any, index: number) => {
-        const sessionsList = subject.sessionsList.map(
-          () => combinedSessions[sessionIndex++]
-        );
-        return {
-          ...subject,
-          isExpanded: index === 0,
-          sessionsList,
-        };
-      });
+      const subjects = res?.data?.listSubject?.map(
+        (subject: any, index: number) => {
+          const sessionsList = subject.sessionsList.map(
+            () => combinedSessions[sessionIndex++]
+          );
+          return {
+            ...subject,
+            isExpanded: index === 0,
+            sessionsList,
+          };
+        }
+      );
 
       setSubjects(subjects);
     } catch (error) {
