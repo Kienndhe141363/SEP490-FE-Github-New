@@ -134,47 +134,12 @@ const AddNewClass2Form = ({
     fetchListLocation();
     fetchListGeneration();
     fetchListTrainer();
-    // if (data?.subjectList?.length) {
-    //   setFormData({
-    //     ...formData,
-    //     classCode: data.classCode,
-    //     locationId: data.locationId,
-    //     generationId: data.generationId,
-    //     startDate: data.startDate,
-    //     endDate: data.endDate,
-    //     note: data.note,
-    //     subjectList: data?.subjectList?.map((subject: any) => ({
-    //       subjectId: subject.subjectId,
-    //       slot: subject.slot,
-    //       trainer: subject.trainer,
-    //       sessionList: subject?.sessionList,
-    //     })),
-    //   });
-    // }
   }, []);
 
   useEffect(() => {
     if (data?.classId) {
       fetchListSubject();
     }
-
-    // if (data?.subjectList?.length) {
-    //   setFormData({
-    //     ...formData,
-    //     classCode: data.classCode,
-    //     locationId: data.locationId,
-    //     generationId: data.generationId,
-    //     startDate: data.startDate,
-    //     endDate: data.endDate,
-    //     note: data.note,
-    //     subjectList: data?.subjectList?.map((subject: any) => ({
-    //       subjectId: subject.subjectId,
-    //       slot: subject.slot,
-    //       trainer: subject.trainer,
-    //       sessionList: subject?.sessionList,
-    //     })),
-    //   });
-    // }
   }, [data]);
 
   console.log(data);
@@ -375,6 +340,7 @@ const AddNewClass2Form = ({
                     })
                   }
                   value={formData?.startDate}
+                  min={new Date().toISOString().split("T")[0]}
                 />
               </div>
               <div>
@@ -386,6 +352,8 @@ const AddNewClass2Form = ({
                     setFormData({ ...formData, endDate: e.target.value })
                   }
                   value={formData?.endDate}
+                  min={formData?.startDate}
+                  disabled={!formData?.startDate}
                 />
               </div>
               <div>
@@ -414,7 +382,6 @@ const AddNewClass2Form = ({
                   <thead>
                     <tr className="bg-[#6FBC44] text-white">
                       <th className="border border-gray-300 p-2">Code</th>
-                      {/* <th className="border border-gray-300 p-2">Slot</th> */}
                       <th className="border border-gray-300 p-2">Trainer</th>
                     </tr>
                   </thead>
@@ -424,44 +391,6 @@ const AddNewClass2Form = ({
                         <td className="border border-gray-300 p-2">
                           {subject.subjectCode}
                         </td>
-                        {/* <td className="border border-gray-300 p-2">
-                          <select
-                            className="w-full border p-1"
-                            onChange={(e) => {
-                              const selectedSlot = e.target.value; // Slot người dùng vừa chọn
-                              const updatedSubjectList =
-                                formData.subjectList.map((item: any) => {
-                                  if (item.subjectId === subject.subjectId) {
-                                    // Cập nhật slot cho môn hiện tại
-                                    return {
-                                      ...item,
-                                      slot: selectedSlot,
-                                    };
-                                  } else {
-                                    // Đổi slot cho môn còn lại
-                                    return {
-                                      ...item,
-                                      slot: selectedSlot === "1" ? "2" : "1",
-                                    };
-                                  }
-                                });
-
-                              // Cập nhật lại state
-                              setFormData({
-                                ...formData,
-                                subjectList: updatedSubjectList,
-                              });
-                            }}
-                            value={getSlot(subject?.subjectId)}
-                          >
-                            <option>Select Slot</option>
-                            {listSlot.map((slot) => (
-                              <option key={slot} value={slot}>
-                                {slot}
-                              </option>
-                            ))}
-                          </select>
-                        </td> */}
                         <td className="border border-gray-300 p-2">
                           <select
                             className="w-full border p-1"
