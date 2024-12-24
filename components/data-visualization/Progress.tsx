@@ -22,8 +22,8 @@ const Progress = ({ id }: Props) => {
         }
       );
       const res = await response.json();
-      if (res?.data) {
-        setData(res.data);
+      if (res) {
+        setData(res);
       }
     } catch (error) {
       console.error(error);
