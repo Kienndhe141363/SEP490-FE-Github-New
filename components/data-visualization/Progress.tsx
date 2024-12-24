@@ -9,7 +9,7 @@ type Props = {
 
 const Progress = ({ id }: Props) => {
   const [data, setData] = useState<any>({
-    percentageCompleted: 10,
+    percentageCompleted: 0,
     percentageNotStarted: 100,
   });
 
