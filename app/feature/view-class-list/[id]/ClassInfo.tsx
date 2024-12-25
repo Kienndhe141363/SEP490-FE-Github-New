@@ -1,4 +1,5 @@
 import useRole from "@/hooks/useRole";
+import { formatDate } from "date-fns";
 import { useState } from "react";
 
 type Props = {
@@ -40,24 +41,27 @@ const ClassInfo = ({ id, data, listTrainee }: Props) => {
         />
       </div>
       {role !== "ROLE_TRAINEE" && (
-      <div className="flex items-center">
-        <label className="block text-lg font-medium w-48">
-          Plan Trainee No:
-        </label>
-        <input
-          type="text"
-          className="w-full h-10 px-3"
-          value={data?.planTraineeNo}
-          readOnly
-        />
-      </div>
+        <div className="flex items-center">
+          <label className="block text-lg font-medium w-48">
+            Plan Trainee No:
+          </label>
+          <input
+            type="text"
+            className="w-full h-10 px-3"
+            value={data?.planTraineeNo}
+            readOnly
+          />
+        </div>
       )}
       <div className="flex items-center">
         <label className="block text-lg font-medium w-48">Start Date:</label>
         <input
           type="text"
           className="w-full h-10 px-3"
-          value={data?.startDate}
+          value={
+            data?.startDate &&
+            formatDate(new Date(data?.startDate), "dd/MM/yyyy")
+          }
           readOnly
         />
       </div>
@@ -66,21 +70,23 @@ const ClassInfo = ({ id, data, listTrainee }: Props) => {
         <input
           type="text"
           className="w-full h-10 px-3"
-          value={data?.endDate}
+          value={
+            data?.endDate && formatDate(new Date(data?.endDate), "dd/MM/yyyy")
+          }
           readOnly
         />
       </div>
       {role !== "ROLE_TRAINEE" && (
-      <div className="flex items-center">
-        <label className="block text-lg font-medium w-48">Supplier:</label>
-        <input
-          type="text"
-          className="w-full h-10 px-3"
-          value={data?.supplier}
-          readOnly
-        />
-      </div>
-         )}
+        <div className="flex items-center">
+          <label className="block text-lg font-medium w-48">Supplier:</label>
+          <input
+            type="text"
+            className="w-full h-10 px-3"
+            value={data?.supplier}
+            readOnly
+          />
+        </div>
+      )}
       <div className="flex items-center">
         <label className="block text-lg font-medium w-48">Curriculum:</label>
         <input
