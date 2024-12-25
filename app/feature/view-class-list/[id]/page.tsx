@@ -103,12 +103,12 @@ const Page = () => {
   }
 
   const role = useRole();
-  // if (
-  // (role === "ROLE_CLASS_ADMIN" || role === "ROLE_MANAGER") &&
-  //   data?.status
-  // ) {
-  listTabs.push("Schedule");
-  // }
+  if (
+    (role === "ROLE_CLASS_ADMIN" || role === "ROLE_MANAGER") &&
+    data?.status
+  ) {
+    listTabs.push("Schedule");
+  }
 
   if ((role === "ROLE_CLASS_ADMIN" || role === "ROLE_ADMIN") && data?.status) {
     listTabs.push("Data visualization");
