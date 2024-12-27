@@ -4,8 +4,30 @@ import { getJwtToken } from "@/lib/utils";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const ScheduleForm = ({ schedule, setScheduleSelected }: any) => {
+const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
   const [listTrainer, setListTrainer] = useState([]);
+  const [listScheduleByClass, setListScheduleByClass] = useState<any>([]);
+
+  const fetchScheduleByClass = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_API_URL}/class-management/get-schedule-by-class`,
+        {
+          classId,
+          size: 1000,
+          subjectId: schedule.subjectId,
+        },
+        {
+          headers: { Authorization: `Bearer ${getJwtToken()}` },
+        }
+      );
+
+      const res = response.data;
+      setListScheduleByClass(res?.data?.dataSource);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const [formData, setFormData] = useState({
     subjectName: "Java",
@@ -63,6 +85,7 @@ const ScheduleForm = ({ schedule, setScheduleSelected }: any) => {
         endDate: schedule.endDate,
       });
       fetchListTrainer();
+      fetchScheduleByClass();
     }
   }, [schedule]);
 

@@ -128,6 +128,7 @@ const Schedule = ({ id, startDate }: Props) => {
         <ScheduleForm
           schedule={scheduleSelected}
           setScheduleSelected={setScheduleSelected}
+          classId={id}
         />
       ) : (
         <table className="min-w-full bg-white">
@@ -173,6 +174,7 @@ const Schedule = ({ id, startDate }: Props) => {
                               setScheduleSelected({
                                 ...lesson,
                                 subjectName: subject.subjectName,
+                                subjectId: subject.subjectId,
                               })
                             }
                           />
