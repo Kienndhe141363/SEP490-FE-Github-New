@@ -23,7 +23,21 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
       );
 
       const res = response.data;
-      setListScheduleByClass(res?.data?.dataSource);
+      const newList = res?.data?.dataSource;
+      setListScheduleByClass(newList);
+      setFormData({
+        subjectName: schedule.subjectName,
+        lesson: schedule.lesson,
+        trainer: newList.find(
+          (item: any) => item.sessionId === schedule.sessionId
+        )?.trainer,
+        date: schedule.date,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+        scheduleDetailId: newList.find(
+          (item: any) => item.sessionId === schedule.sessionId
+        )?.scheduleDetailId,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -36,8 +50,12 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
     date: "2024-12-09", // Định dạng ngày (YYYY-MM-DD) cho input type="date"
     startDate: "2024-12-09",
     endDate: "2024-12-09",
+    scheduleDetailId: 0,
   });
+  console.log(schedule, "schedule");
   console.log(formData, "formData");
+  console.log(listTrainer, "listTrainer");
+  console.log(listScheduleByClass, "listScheduleByClass");
   const fetchListTrainer = async () => {
     try {
       const response = await axios.post(
@@ -65,7 +83,30 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
 
   // Hàm xử lý khi nhấn nút "Save"
   const handleSave = () => {
-    alert(`Lịch đã lưu!\n${JSON.stringify(formData, null, 2)}`);
+    try {
+      const body = listScheduleByClass.map((item: any) =>
+        item.sessionId === schedule.sessionId
+          ? {
+              trainer: formData.trainer,
+              lesson: formData.lesson,
+              date: formData.date,
+              scheduleDetailId: formData.scheduleDetailId,
+            }
+          : {
+              trainer: item.trainer,
+              lesson: item.lesson,
+              date: item.date,
+              scheduleDetailId: item.scheduleDetailId,
+            }
+      );
+      axios.put(`${BASE_API_URL}/class-management/update-class-session`, body, {
+        headers: { Authorization: `Bearer ${getJwtToken()}` },
+      });
+      alert(`Lịch đã lưu!`);
+      setScheduleSelected(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Hàm xử lý khi nhấn nút "Cancel"
@@ -76,14 +117,6 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
 
   useEffect(() => {
     if (schedule) {
-      setFormData({
-        subjectName: schedule.subjectName,
-        lesson: schedule.lesson,
-        trainer: schedule.trainer,
-        date: schedule.date,
-        startDate: schedule.startDate,
-        endDate: schedule.endDate,
-      });
       fetchListTrainer();
       fetchScheduleByClass();
     }
