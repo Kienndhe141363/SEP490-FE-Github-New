@@ -1,4 +1,4 @@
-import { BASE_API_URL_2 } from "@/config/constant";
+import { BASE_API_URL } from "@/config/constant";
 import { getJwtToken } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
@@ -16,7 +16,7 @@ const Progress = ({ id }: Props) => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${BASE_API_URL_2}/data-visualization/curriculum-progress/${id}`,
+        `${BASE_API_URL}/data-visualization/curriculum-progress/${id}`,
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }

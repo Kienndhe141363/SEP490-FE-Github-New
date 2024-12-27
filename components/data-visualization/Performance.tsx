@@ -1,4 +1,4 @@
-import { BASE_API_URL, BASE_API_URL_2 } from "@/config/constant";
+import { BASE_API_URL } from "@/config/constant";
 import { getJwtToken } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
@@ -15,7 +15,7 @@ const Performance = ({ id }: Props) => {
   const fetchPerformanceData = async () => {
     try {
       const response = await fetch(
-        `${BASE_API_URL_2}/data-visualization/grade-distribution/${id}/${selectedSubject}`,
+        `${BASE_API_URL}/data-visualization/grade-distribution/${id}/${selectedSubject}`,
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }

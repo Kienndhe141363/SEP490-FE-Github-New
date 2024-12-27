@@ -1,7 +1,6 @@
 // export const BASE_API_URL = "http://3.82.112.209:8080/api/v1";
 // export const BASE_API_URL = "http://localhost:8080/api/v1";
 export const BASE_API_URL = "https://thecleanhouse.com.vn/api/v1";
-export const BASE_API_URL_2 = "https://thecleanhouse.com.vn";
 export const AppRole = {
   admin: "ROLE_ADMIN",
   class_admin: "ROLE_CLASS_ADMIN",

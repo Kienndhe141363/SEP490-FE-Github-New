@@ -1,4 +1,4 @@
-import { BASE_API_URL_2 } from "@/config/constant";
+import { BASE_API_URL } from "@/config/constant";
 import { getJwtToken } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
@@ -81,7 +81,7 @@ const AttendanceOverview = (props: Props) => {
   const fetchListSchedules = async () => {
     try {
       const response = await fetch(
-        `${BASE_API_URL_2}/data-visualization/schedule-details/${props.id}`,
+        `${BASE_API_URL}/data-visualization/schedule-details/${props.id}`,
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
@@ -99,7 +99,7 @@ const AttendanceOverview = (props: Props) => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        `${BASE_API_URL_2}/data-visualization/attendance/${selectedDate}`,
+        `${BASE_API_URL}/data-visualization/attendance/${selectedDate}`,
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
         }
