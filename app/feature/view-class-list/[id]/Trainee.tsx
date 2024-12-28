@@ -83,8 +83,11 @@ const Trainee = ({ id, listTrainee, fetchListTrainee, status }: Props) => {
 
   const fetchListTraineeForAdd = async () => {
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         `${BASE_API_URL}/trainee/get-trainees-without-class`,
+        {
+          size: 1000,
+        },
         {
           headers: {
             Authorization: `Bearer ${getJwtToken()}`,
