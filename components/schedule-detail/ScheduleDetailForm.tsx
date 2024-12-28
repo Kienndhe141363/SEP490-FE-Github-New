@@ -122,6 +122,8 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
     }
   }, [schedule]);
 
+  const hasTeacherReplace = listTrainer?.length > 1;
+
   return (
     <div className="min-h-screen flex-1  bg-[#EFF5EB] p-8 py-10">
       <h2 className="text-4xl font-bold p-4 mb-16">Schedule Detail</h2>
@@ -161,6 +163,7 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
                 value={formData.trainer}
                 onChange={handleChange}
                 className="border rounded w-full p-2"
+                disabled={!hasTeacherReplace}
               >
                 {listTrainer.map((trainer, index) => (
                   <option key={index} value={trainer.account}>
@@ -177,6 +180,7 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
                 value={new Date(formData.startDate).toISOString().split("T")[0]}
                 onChange={handleChange}
                 className="border rounded w-full p-2"
+                disabled={hasTeacherReplace}
               />
             </div>
           </div>
