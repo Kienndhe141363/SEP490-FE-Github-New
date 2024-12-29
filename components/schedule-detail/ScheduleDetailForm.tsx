@@ -28,14 +28,13 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
       setFormData({
         subjectName: schedule.subjectName,
         lesson: schedule.lesson,
-        trainer: newList.find(
-          (item: any) => item.sessionId === schedule.sessionId
-        )?.trainer,
+        trainer: newList.find((item: any) => item.slot === schedule.slot)
+          ?.trainer,
         date: schedule.date,
         startDate: schedule.startDate,
         endDate: schedule.endDate,
         scheduleDetailId: newList.find(
-          (item: any) => item.sessionId === schedule.sessionId
+          (item: any) => item.slot === schedule.slot
         )?.scheduleDetailId,
       });
     } catch (error) {
@@ -85,7 +84,7 @@ const ScheduleForm = ({ schedule, setScheduleSelected, classId }: any) => {
   const handleSave = () => {
     try {
       const body = listScheduleByClass.map((item: any) =>
-        item.sessionId === schedule.sessionId
+        item.slot === schedule.slot
           ? {
               trainer: formData.trainer,
               lesson: formData.lesson,

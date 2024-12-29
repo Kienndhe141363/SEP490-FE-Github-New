@@ -176,6 +176,7 @@ const Schedule = ({ id, startDate }: Props) => {
                                 subjectName: subject.subjectName,
                                 subjectId: subject.subjectId,
                                 sessionId: lesson.sessionId,
+                                slot: lesson.sessionOrder,
                               })
                             }
                           />
