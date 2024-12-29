@@ -83,8 +83,9 @@ const AddNewClass2Form = ({
         `${BASE_API_URL}/class-management/get-trainer-for-class`,
         {
           slot: 1,
-          startDate: "2021-11-24T12:16:46.929Z",
-          endDate: "2024-11-24T12:16:46.929Z",
+          startDate:
+            new Date(formData?.startDate) || "2021-11-24T12:16:46.929Z",
+          endDate: new Date(formData?.endDate) || "2025-11-24T12:16:46.929Z",
         },
         {
           headers: { Authorization: `Bearer ${getJwtToken()}` },
@@ -133,8 +134,11 @@ const AddNewClass2Form = ({
   useEffect(() => {
     fetchListLocation();
     fetchListGeneration();
-    fetchListTrainer();
   }, []);
+
+  useEffect(() => {
+    fetchListTrainer();
+  }, [formData?.startDate, formData?.endDate]);
 
   useEffect(() => {
     if (data?.classId) {

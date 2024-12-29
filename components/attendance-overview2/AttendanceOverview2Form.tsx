@@ -61,7 +61,9 @@ const AttendanceOverview2 = ({
 
   // Weekly Attendance Data
   const weeklyAttendanceData = {
-    labels: columnWeekData.map((item: any) => item.weekLabel),
+    labels: columnWeekData.map(
+      (item: any) => `${item.weekLabel} (${item.weekRange})`
+    ),
     datasets: [
       {
         label: "Present",
