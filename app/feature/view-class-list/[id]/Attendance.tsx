@@ -116,7 +116,7 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
       const res = await response.json();
       if (res?.data) {
         setListSubject(res?.data?.listSubject);
-        setSelectedSubject(res?.data[0]?.subjectId);
+        setSelectedSubject(res?.data?.listSubject[0]?.subjectId);
       }
     } catch (error) {
       console.error(error);
