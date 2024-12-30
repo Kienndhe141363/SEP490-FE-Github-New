@@ -21,7 +21,7 @@ const dateTime = {
   ],
   February: [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29,
+    22, 23, 24, 25, 26, 27, 28,
   ],
   March: [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
@@ -197,22 +197,46 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
     setListAttendance([]);
   };
 
-  const findAttendance = (userId: number, date: any) => {
+  const findAttendance = (userId: number, dateSlot: any) => {
     const userAttendance = listAttendance.find(
       (attendance: any) => attendance.userId === userId
     );
 
+    const [date, slot] = dateSlot.split("-");
+    const dateNumber = parseInt(date, 10); // Convert date to a number
+    // const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
+    //   (attendance: any) => {
+    //     const endDate = new Date(attendance.endDate).getDate();
+    //     return endDate === date;
+    //   }
+    // );
+
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const endDate = new Date(attendance.endDate).getDate();
-        return endDate === date;
+        const endDate = new Date(attendance.endDate);
+        const endDay = endDate.getDate(); // Get the day of the month
+        const endTimeString = attendance.endDate.split("T")[1];
+
+        if (endDay !== dateNumber) {
+          return false;
+        }
+
+        if (slot === "slot1" && endTimeString.includes("04:30:00")) {
+          return true;
+        }
+
+        if (slot === "slot2" && endTimeString.includes("10:00:00")) {
+          return true;
+        }
+
+        return false;
       }
     );
 
     return (
       listAttendanceUpdate.find(
         (attendance: any) =>
-          attendance.userId === userId && attendance.date === date
+          attendance.userId === userId && attendance.date === dateSlot
       )?.status ||
       attendanceDetail?.status ||
       ""
@@ -223,30 +247,66 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
   const listDateOfMonth = dateTime[selectedMonth];
   const attendanceStatusKeys = Object.keys(attendanceStatus);
 
-  const isDisableAttendance = (userId: number, date: any) => {
+  const isDisableAttendance = (userId: number, dateSlot: any) => {
     const userAttendance = listAttendance.find(
       (attendance: any) => attendance.userId === userId
     );
 
+    const [date, slot] = dateSlot.split("-");
+    const dateNumber = parseInt(date, 10); // Convert date to a number
+
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const endDate = new Date(attendance.endDate).getDate();
-        return endDate === date;
+        const endDate = new Date(attendance.endDate);
+        const endDay = endDate.getDate(); // Get the day of the month
+        const endTimeString = attendance.endDate.split("T")[1];
+
+        if (endDay !== dateNumber) {
+          return false;
+        }
+
+        if (slot === "slot1" && endTimeString.includes("04:30:00")) {
+          return true;
+        }
+
+        if (slot === "slot2" && endTimeString.includes("10:00:00")) {
+          return true;
+        }
+
+        return false;
       }
     );
 
     return !attendanceDetail;
   };
 
-  const findScheduleDetailId = (userId: number, date: any) => {
+  const findScheduleDetailId = (userId: number, dateSlot: any) => {
     const userAttendance = listAttendance.find(
       (attendance: any) => attendance.userId === userId
     );
 
+    const [date, slot] = dateSlot.split("-");
+    const dateNumber = parseInt(date, 10); // Convert date to a number
+
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
-        const endDate = new Date(attendance.endDate).getDate();
-        return endDate === date;
+        const endDate = new Date(attendance.endDate);
+        const endDay = endDate.getDate(); // Get the day of the month
+        const endTimeString = attendance.endDate.split("T")[1];
+
+        if (endDay !== dateNumber) {
+          return false;
+        }
+
+        if (slot === "slot1" && endTimeString.includes("04:30:00")) {
+          return true;
+        }
+
+        if (slot === "slot2" && endTimeString.includes("10:00:00")) {
+          return true;
+        }
+
+        return false;
       }
     );
 
@@ -319,13 +379,25 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
                   >
                     Name
                   </th>
-                  {listDateOfMonth.map((date: any) => (
-                    <th
-                      key={date}
-                      className="p-3 text-center bg-green-500 text-white border border-green-600 min-w-3"
-                    >
-                      {date}
-                    </th>
+                  {listDateOfMonth.map((date) => (
+                    <>
+                      <th
+                        key={`${date}-slot1`}
+                        className="p-3 text-center bg-green-500 text-white border border-green-600 min-w-3"
+                      >
+                        {date}
+                        <br />
+                        Slot1
+                      </th>
+                      <th
+                        key={`${date}-slot2`}
+                        className="p-3 text-center bg-green-500 text-white border border-green-600 min-w-3"
+                      >
+                        {date}
+                        <br />
+                        Slot2
+                      </th>
+                    </>
                   ))}
                 </tr>
               </thead>
@@ -337,70 +409,148 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
                       {trainee.fullName}
                     </td>
                     {listDateOfMonth.map((date: any) => (
-                      <td
-                        key={`${trainee.userId}-${date}`}
-                        className="p-3 text-center border min-w-3"
-                      >
-                        <select
-                          className={`bg-transparent cursor-pointer outline-none min-w-3 text-center font-medium
+                      <>
+                        <td
+                          key={`${trainee.userId}-${date}-slot1`}
+                          className="p-3 text-center border min-w-3"
+                        >
+                          <select
+                            className={`bg-transparent cursor-pointer outline-none min-w-3 text-center font-medium
                                     ${getAttendanceColor("")}
                                     ${
                                       isDisableAttendance(
                                         trainee.userId,
-                                        date
+                                        `${date}-slot1`
                                       ) && "!bg-slate-500"
                                     }
                                     `}
-                          value={findAttendance(trainee.userId, date) || ""}
-                          onChange={(e) => {
-                            const value = e.target.value;
+                            value={
+                              findAttendance(trainee.userId, `${date}-slot1`) ||
+                              ""
+                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
 
-                            const foundIndex = listAttendanceUpdate.findIndex(
-                              (item) =>
-                                item.userId === trainee.userId &&
-                                item.date === date
-                            );
-                            if (foundIndex !== -1) {
-                              listAttendanceUpdate[foundIndex] = {
-                                userId: trainee.userId,
-                                date: date,
-                                status: value,
-                                scheduleDetailId: findScheduleDetailId(
-                                  trainee.userId,
-                                  date
-                                ),
-                              };
-                              setListAttendanceUpdate([
-                                ...listAttendanceUpdate,
-                              ]);
-                            } else {
-                              setListAttendanceUpdate([
-                                ...listAttendanceUpdate,
-                                {
+                              const foundIndex = listAttendanceUpdate.findIndex(
+                                (item) =>
+                                  item.userId === trainee.userId &&
+                                  item.date === `${date}-slot1`
+                              );
+                              if (foundIndex !== -1) {
+                                listAttendanceUpdate[foundIndex] = {
                                   userId: trainee.userId,
-                                  date: date,
+                                  date: `${date}-slot1`,
                                   status: value,
                                   scheduleDetailId: findScheduleDetailId(
                                     trainee.userId,
-                                    date
+                                    `${date}-slot1`
                                   ),
-                                },
-                              ]);
-                            }
-                          }}
-                          disabled={isDisableAttendance(trainee.userId, date)}
+                                };
+                                setListAttendanceUpdate([
+                                  ...listAttendanceUpdate,
+                                ]);
+                              } else {
+                                setListAttendanceUpdate([
+                                  ...listAttendanceUpdate,
+                                  {
+                                    userId: trainee.userId,
+                                    date: `${date}-slot1`,
+                                    status: value,
+                                    scheduleDetailId: findScheduleDetailId(
+                                      trainee.userId,
+                                      `${date}-slot1`
+                                    ),
+                                  },
+                                ]);
+                              }
+                            }}
+                            disabled={isDisableAttendance(
+                              trainee.userId,
+                              `${date}-slot1`
+                            )}
+                          >
+                            <option value="">Select</option>
+                            {attendanceStatusKeys.map((status, index) => (
+                              <option
+                                key={status}
+                                value={attendanceStatusKeys[index]}
+                              >
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td
+                          key={`${trainee.userId}-${date}-slot2`}
+                          className="p-3 text-center border min-w-3"
                         >
-                          <option value="">-</option>
-                          {attendanceStatusKeys.map((status, index) => (
-                            <option
-                              key={status}
-                              value={attendanceStatusKeys[index]}
-                            >
-                              {status}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
+                          <select
+                            className={`bg-transparent cursor-pointer outline-none min-w-3 text-center font-medium
+                                    ${getAttendanceColor("")}
+                                    ${
+                                      isDisableAttendance(
+                                        trainee.userId,
+                                        `${date}-slot2`
+                                      ) && "!bg-slate-500"
+                                    }
+                                    `}
+                            value={
+                              findAttendance(trainee.userId, `${date}-slot2`) ||
+                              ""
+                            }
+                            onChange={(e) => {
+                              const value = e.target.value;
+
+                              const foundIndex = listAttendanceUpdate.findIndex(
+                                (item) =>
+                                  item.userId === trainee.userId &&
+                                  item.date === `${date}-slot2`
+                              );
+                              if (foundIndex !== -1) {
+                                listAttendanceUpdate[foundIndex] = {
+                                  userId: trainee.userId,
+                                  date: `${date}-slot2`,
+                                  status: value,
+                                  scheduleDetailId: findScheduleDetailId(
+                                    trainee.userId,
+                                    `${date}-slot2`
+                                  ),
+                                };
+                                setListAttendanceUpdate([
+                                  ...listAttendanceUpdate,
+                                ]);
+                              } else {
+                                setListAttendanceUpdate([
+                                  ...listAttendanceUpdate,
+                                  {
+                                    userId: trainee.userId,
+                                    date: `${date}-slot2`,
+                                    status: value,
+                                    scheduleDetailId: findScheduleDetailId(
+                                      trainee.userId,
+                                      `${date}-slot2`
+                                    ),
+                                  },
+                                ]);
+                              }
+                            }}
+                            disabled={isDisableAttendance(
+                              trainee.userId,
+                              `${date}-slot2`
+                            )}
+                          >
+                            <option value="">Select</option>
+                            {attendanceStatusKeys.map((status, index) => (
+                              <option
+                                key={status}
+                                value={attendanceStatusKeys[index]}
+                              >
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      </>
                     ))}
                   </tr>
                 ))}
