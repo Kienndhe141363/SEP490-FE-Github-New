@@ -65,6 +65,21 @@ const dateTime = {
   ],
 };
 
+const monthMapping: { [key: string]: number } = {
+  January: 1,
+  February: 2,
+  March: 3,
+  April: 4,
+  May: 5,
+  June: 6,
+  July: 7,
+  August: 8,
+  September: 9,
+  October: 10,
+  November: 11,
+  December: 12,
+};
+
 const attendanceStatus = {
   P: "Present",
   A: "Absent",
@@ -217,6 +232,10 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
+        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
+        if (endMonth !== monthMapping[selectedMonth]) {
+          return false;
+        }
         if (endDay !== dateNumber) {
           return false;
         }
@@ -261,6 +280,10 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
+        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
+        if (endMonth !== monthMapping[selectedMonth]) {
+          return false;
+        }
         if (endDay !== dateNumber) {
           return false;
         }
@@ -291,9 +314,14 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
         const endDate = new Date(attendance.endDate);
+
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
+        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
+        if (endMonth !== monthMapping[selectedMonth]) {
+          return false;
+        }
         if (endDay !== dateNumber) {
           return false;
         }
