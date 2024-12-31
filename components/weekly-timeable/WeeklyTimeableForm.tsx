@@ -169,17 +169,15 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
       // Sử dụng Date.UTC để tạo ngày với múi giờ UTC
       startDate = new Date(
         Date.UTC(selectedYear, parseInt(startMonth) - 1, parseInt(startDay))
-      );
+      ).setHours(1);
       endDate = new Date(
         Date.UTC(selectedYear, parseInt(endMonth) - 1, parseInt(endDay))
       );
     }
-
-    const date = new Date(item.startDate);
+    console.log(startDate, endDate);
+    const date = new Date(item.endDate);
     return date >= startDate && date <= endDate;
   });
-  console.log(data);
-  console.log(dataDisplayByWeek);
 
   return (
     <div className="w-full min-h-screen bg-white">
