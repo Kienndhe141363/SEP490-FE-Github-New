@@ -65,7 +65,7 @@ const Progress = ({ id }: Props) => {
 
   return (
     <div className="bg-white p-4 rounded-lg">
-      <div className="h-[200px] relative">
+      <div className="h-[200px] relative mt-12">
         <div className="relative h-full">
           <Doughnut data={progressData} options={progressOptions} />
           <div className="absolute inset-0 flex items-center justify-center">

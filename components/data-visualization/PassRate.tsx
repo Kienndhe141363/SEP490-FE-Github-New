@@ -73,7 +73,7 @@ const PassRate = ({ id }: Props) => {
 
   return (
     <div className="bg-white p-4 rounded-lg">
-      <div className="h-[200px]">
+      <div className="h-[200px] mt-12">
         <Pie data={passRateData} options={chartOptions} />
       </div>
       <p className="text-center mt-4 text-sm ">

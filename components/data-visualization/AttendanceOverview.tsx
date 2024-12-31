@@ -193,7 +193,7 @@ const AttendanceOverview = ({ id }: Props) => {
   return (
     <div className="bg-white p-4 rounded-lg relative">
       {/* Added date display ABOVE the chart */}
-      <div className="flex justify-center items-center mb-2 gap-2">
+      <div className="flex justify-center items-center my-2 gap-2">
         {/* chọn loại biểu đồ  */}
         <select
           value={attendanceTab}

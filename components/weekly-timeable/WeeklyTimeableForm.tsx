@@ -17,14 +17,16 @@ type WeeklyTimetableFormProps = {
   listTrainee: any;
 };
 
+const specialWeek = "30/12-5/1";
 const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
   const router = useRouter();
-  console.log(id);
-  console.log(listTrainee);
   const account = listTrainee[0]?.account;
-  console.log(account);
 
   const [data, setData] = useState<any>(null);
+
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedWeek, setSelectedWeek] = useState("2/12-8/12");
 
   const getSlot = (date: string) => {
     // tôi muốn date +6h
@@ -76,12 +78,38 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
       console.error(error);
     }
   };
-  console.log(data);
+
+  const getCurrentWeek = () => {
+    const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getDay();
+    const currentYear = currentDate.getFullYear();
+
+    // Adjust currentDate to the previous Monday
+    const startDate = new Date(currentDate);
+    startDate.setDate(
+      currentDate.getDate() -
+        (currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1)
+    );
+
+    // Calculate the end date (Sunday)
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+
+    // Handle special week case
+    if (startDate.getDate() === 30 && startDate.getMonth() === 11) {
+      return specialWeek;
+    }
+
+    return `${startDate.getDate()}/${
+      startDate.getMonth() + 1
+    }-${endDate.getDate()}/${endDate.getMonth() + 1}`;
+  };
 
   useEffect(() => {
     if (account) {
       fetchData();
     }
+    setSelectedWeek(getCurrentWeek());
   }, []);
 
   const handleSave = () => {
@@ -93,8 +121,6 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
     router.push("/feature/view-class-list"); // Quay về trang danh sách lớp
   };
 
-  const [selectedWeek, setSelectedWeek] = useState("2/12-8/12");
-
   const timeSlots = [
     { id: 1, time: "9h30-11h00" },
     { id: 2, time: "13h00-16h00" },
@@ -102,31 +128,57 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
 
   const days = ["Week", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-  // Generate weeks for the entire year
-  const weeks = Array.from({ length: 52 }, (_, index) => {
-    const startDay = new Date(2024, 0, 1 + index * 7);
-    const endDay = new Date(startDay);
-    endDay.setDate(endDay.getDate() + 6);
-    return `${startDay.getDate()}/${
-      startDay.getMonth() + 1
-    }-${endDay.getDate()}/${endDay.getMonth() + 1}`;
-  });
+  const generateWeeks = (year: number) => {
+    const weeks = [];
+    if (year == 2025) weeks.push(specialWeek);
+    let startDay = new Date(year, 0, 1);
+
+    // Adjust startDay to the first Monday of the year
+    while (startDay.getDay() !== 1) {
+      startDay.setDate(startDay.getDate() + 1);
+    }
+
+    for (let i = 0; i < 52; i++) {
+      const endDay = new Date(startDay);
+      endDay.setDate(endDay.getDate() + 6);
+      weeks.push(
+        `${startDay.getDate()}/${startDay.getMonth() + 1}-${endDay.getDate()}/${
+          endDay.getMonth() + 1
+        }`
+      );
+      startDay.setDate(startDay.getDate() + 7);
+    }
+    if (year == 2024) weeks.push(specialWeek);
+    return weeks;
+  };
+
+  const weeks = generateWeeks(selectedYear);
 
   const dataDisplayByWeek = data?.filter((item: any) => {
     const [startWeek, endWeek] = selectedWeek.split("-");
     const [startDay, startMonth] = startWeek.split("/");
     const [endDay, endMonth] = endWeek.split("/");
-    // Sử dụng Date.UTC để tạo ngày với múi giờ UTC
-    const startDate = new Date(
-      Date.UTC(2024, parseInt(startMonth) - 1, parseInt(startDay))
-    );
-    const endDate = new Date(
-      Date.UTC(2024, parseInt(endMonth) - 1, parseInt(endDay))
-    );
+
+    let startDate, endDate;
+
+    if (selectedWeek === specialWeek) {
+      // Handle special week case
+      startDate = new Date(Date.UTC(2024, 11, 30)); // 30/12/2024
+      endDate = new Date(Date.UTC(2025, 0, 5)); // 05/01/2025
+    } else {
+      // Sử dụng Date.UTC để tạo ngày với múi giờ UTC
+      startDate = new Date(
+        Date.UTC(selectedYear, parseInt(startMonth) - 1, parseInt(startDay))
+      );
+      endDate = new Date(
+        Date.UTC(selectedYear, parseInt(endMonth) - 1, parseInt(endDay))
+      );
+    }
 
     const date = new Date(item.startDate);
     return date >= startDate && date <= endDate;
   });
+  console.log(data);
   console.log(dataDisplayByWeek);
 
   return (
@@ -136,17 +188,29 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
         <div className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-4xl font-semibold">Weekly Timetable</h1>
-            {/* <div className="flex items-center gap-2">
-              <span>Class:</span>
-              <Select value={selectedClass} onValueChange={setSelectedClass}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue>{selectedClass}</SelectValue>
+            <div className="flex items-center gap-2">
+              <Select
+                value={selectedYear.toString()}
+                onValueChange={(value) => {
+                  setSelectedYear(value as unknown as number);
+                  if (getCurrentWeek() !== specialWeek) {
+                    if (value === "2025") {
+                      setSelectedWeek(getCurrentWeek());
+                    } else {
+                      setSelectedWeek(weeks[weeks.length - 1]);
+                    }
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue>{selectedYear}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="HN24_FR_KS_04">HN24_FR_KS_04</SelectItem>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2025">2025</SelectItem>
                 </SelectContent>
               </Select>
-            </div> */}
+            </div>
           </div>
 
           <Card className="shadow-md">
@@ -190,53 +254,6 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
                       <td className="p-3 border bg-[#F5F5F5]">
                         <div className="text-sm">{slot.time}</div>
                       </td>
-                      {/* Columns for each day */}
-                      {/* {days.slice(1).map((day) => (
-                        <td key={`${slot.id}-${day}`} className="p-3 border">
-                          <Select
-                            defaultValue={slot.id === "slot1" ? "JAVA" : "KOR1"}
-                          >
-                            <SelectTrigger className="w-full mb-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="JAVA">JAVA</SelectItem>
-                              <SelectItem value="KOR1">KOR1</SelectItem>
-                            </SelectContent>
-                          </Select>
-
-                          <div className="mb-2">
-                            <div className="text-xs text-green-600">ROOM:</div>
-                            <Select defaultValue="PASSION">
-                              <SelectTrigger className="w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="PASSION">PASSION</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div>
-                            <div className="text-xs text-green-600">
-                              Trainer:
-                            </div>
-                            <Select
-                              defaultValue={
-                                slot.id === "slot1" ? "LongNQ3" : "AnhBH17"
-                              }
-                            >
-                              <SelectTrigger className="w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="LongNQ3">LongNQ3</SelectItem>
-                                <SelectItem value="AnhBH17">AnhBH17</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </td>
-                      ))} */}
                       {days.slice(1).map((day) => {
                         const dataBySlot = dataDisplayByWeek?.filter(
                           (item: any) => item.slot === `slot${slot.id}`
@@ -271,7 +288,7 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
             </CardContent>
           </Card>
 
-          <div className="flex justify-center gap-4 mt-6">
+          {/* <div className="flex justify-center gap-4 mt-6">
             <button
               className="bg-[#4CAF50] text-white px-8 py-2 rounded"
               onClick={handleSave}
@@ -284,7 +301,7 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
             >
               Cancel
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
