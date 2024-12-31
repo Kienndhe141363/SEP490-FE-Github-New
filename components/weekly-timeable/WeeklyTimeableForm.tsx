@@ -191,12 +191,10 @@ const WeeklyTimetableForm = ({ id, listTrainee }: WeeklyTimetableFormProps) => {
                 value={selectedYear.toString()}
                 onValueChange={(value) => {
                   setSelectedYear(value as unknown as number);
-                  if (getCurrentWeek() !== specialWeek) {
-                    if (value === "2025") {
-                      setSelectedWeek(getCurrentWeek());
-                    } else {
-                      setSelectedWeek(weeks[weeks.length - 1]);
-                    }
+                  if (value === "2025") {
+                    setSelectedWeek(getCurrentWeek());
+                  } else {
+                    setSelectedWeek(specialWeek);
                   }
                 }}
               >
