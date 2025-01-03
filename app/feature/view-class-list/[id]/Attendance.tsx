@@ -14,71 +14,7 @@ import { BASE_API_URL } from "@/config/constant";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const dateTime = {
-  January: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  February: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28,
-  ],
-  March: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  April: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30,
-  ],
-  May: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  June: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30,
-  ],
-  July: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  August: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  September: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30,
-  ],
-  October: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-  November: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30,
-  ],
-  December: [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-  ],
-};
-
-const monthMapping: { [key: string]: number } = {
-  January: 1,
-  February: 2,
-  March: 3,
-  April: 4,
-  May: 5,
-  June: 6,
-  July: 7,
-  August: 8,
-  September: 9,
-  October: 10,
-  November: 11,
-  December: 12,
-};
+const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
 const attendanceStatus = {
   P: "Present",
@@ -110,15 +46,17 @@ type Props = {
   listTrainee: any[];
 };
 
+const specialWeek = "30/12-5/1";
 const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
-  const currentMonth = new Date().getMonth();
-  const [selectedMonth, setSelectedMonth] = useState<keyof typeof dateTime>(
-    Object.keys(dateTime)[currentMonth] as keyof typeof dateTime
-  );
   const [listSubject, setListSubject] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [listAttendance, setListAttendance] = useState([]);
   const [listAttendanceUpdate, setListAttendanceUpdate] = useState([]);
+  const [statistic, setStatistics] = useState([]);
+
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedWeek, setSelectedWeek] = useState("2/12-8/12");
 
   const fetchListSubject = async () => {
     try {
@@ -165,10 +103,6 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
   console.log("listAttendanceUpdate", listAttendanceUpdate);
   console.log("listAttendance", listAttendance);
 
-  const handleChangeMonth = (month: keyof typeof dateTime) => {
-    setSelectedMonth(month);
-  };
-
   const handleReset = () => {
     setListAttendanceUpdate([]);
   };
@@ -212,19 +146,62 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
     setListAttendance([]);
   };
 
+  const getDateByDayAndCurrentWeek = (day: string, week: string) => {
+    const [startDay, endDay] = week.split("-");
+
+    const [startDayNumber, startMonth] = startDay.split("/").map(Number);
+    const [endDayNumber, endMonth] = endDay.split("/").map(Number);
+
+    let start, end;
+
+    if (week === specialWeek) {
+      // Handle special week case
+      start = new Date(Date.UTC(2024, 11, 30)); // 30/12/2024
+      end = new Date(Date.UTC(2025, 0, 5)); // 05/01/2025
+    } else {
+      start = new Date(selectedYear, startMonth - 1, startDayNumber);
+      end = new Date(selectedYear, endMonth - 1, endDayNumber);
+    }
+
+    const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const dayIndex = days.indexOf(day);
+
+    while (start.getDay() !== dayIndex) {
+      start.setDate(start.getDate() + 1);
+    }
+
+    return start.getDate();
+  };
+
+  const getRangeTimeByWeek = (week: string) => {
+    const [startDay, endDay] = week.split("-");
+
+    const [startDayNumber, startMonth] = startDay.split("/").map(Number);
+    const [endDayNumber, endMonth] = endDay.split("/").map(Number);
+
+    let start, end;
+
+    if (week === specialWeek) {
+      // Handle special week case
+      start = new Date(Date.UTC(2024, 11, 30)); // 30/12/2024
+      end = new Date(Date.UTC(2025, 0, 5)); // 05/01/2025
+    } else {
+      start = new Date(selectedYear, startMonth - 1, startDayNumber);
+      end = new Date(selectedYear, endMonth - 1, endDayNumber);
+    }
+
+    return [start, end];
+  };
+
   const findAttendance = (userId: number, dateSlot: any) => {
     const userAttendance = listAttendance.find(
       (attendance: any) => attendance.userId === userId
     );
 
-    const [date, slot] = dateSlot.split("-");
-    const dateNumber = parseInt(date, 10); // Convert date to a number
-    // const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
-    //   (attendance: any) => {
-    //     const endDate = new Date(attendance.endDate).getDate();
-    //     return endDate === date;
-    //   }
-    // );
+    const [day, slot] = dateSlot.split("-");
+    const date = getDateByDayAndCurrentWeek(day, selectedWeek);
+
+    const [start, end] = getRangeTimeByWeek(selectedWeek);
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
@@ -232,11 +209,11 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
-        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
-        if (endMonth !== monthMapping[selectedMonth]) {
+        if (endDate < start || endDate > end) {
           return false;
         }
-        if (endDay !== dateNumber) {
+
+        if (endDay !== date) {
           return false;
         }
 
@@ -262,8 +239,6 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
     );
   };
 
-  const months = Object.keys(dateTime);
-  const listDateOfMonth = dateTime[selectedMonth];
   const attendanceStatusKeys = Object.keys(attendanceStatus);
 
   const isDisableAttendance = (userId: number, dateSlot: any) => {
@@ -271,8 +246,15 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
       (attendance: any) => attendance.userId === userId
     );
 
-    const [date, slot] = dateSlot.split("-");
-    const dateNumber = parseInt(date, 10); // Convert date to a number
+    const [day, slot] = dateSlot.split("-");
+    const date = getDateByDayAndCurrentWeek(day, selectedWeek);
+
+    const [start, end] = getRangeTimeByWeek(selectedWeek);
+
+    const startToday = new Date();
+    startToday.setHours(0, 0, 0, 0);
+    const endToday = new Date();
+    endToday.setHours(23, 59, 59, 999);
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
@@ -280,11 +262,15 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
-        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
-        if (endMonth !== monthMapping[selectedMonth]) {
+        if (endDate < startToday || endDate > endToday) {
           return false;
         }
-        if (endDay !== dateNumber) {
+
+        if (endDate < start || endDate > end) {
+          return false;
+        }
+
+        if (endDay !== date) {
           return false;
         }
 
@@ -308,8 +294,10 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
       (attendance: any) => attendance.userId === userId
     );
 
-    const [date, slot] = dateSlot.split("-");
-    const dateNumber = parseInt(date, 10); // Convert date to a number
+    const [day, slot] = dateSlot.split("-");
+    const date = getDateByDayAndCurrentWeek(day, selectedWeek);
+
+    const [start, end] = getRangeTimeByWeek(selectedWeek);
 
     const attendanceDetail = userAttendance?.litAttendanceStatuses.find(
       (attendance: any) => {
@@ -318,11 +306,11 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         const endDay = endDate.getDate(); // Get the day of the month
         const endTimeString = attendance.endDate.split("T")[1];
 
-        const endMonth = endDate.getMonth() + 1; // Get the month of the year (0-based index)
-        if (endMonth !== monthMapping[selectedMonth]) {
+        if (endDate < start || endDate > end) {
           return false;
         }
-        if (endDay !== dateNumber) {
+
+        if (endDay !== date) {
           return false;
         }
 
@@ -341,14 +329,91 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
     return attendanceDetail?.scheduleDetailId;
   };
 
+  const getCurrentWeek = () => {
+    const currentDate = new Date();
+    const currentDayOfWeek = currentDate.getDay();
+    const currentYear = currentDate.getFullYear();
+
+    // Adjust currentDate to the previous Monday
+    const startDate = new Date(currentDate);
+    startDate.setDate(
+      currentDate.getDate() -
+        (currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1)
+    );
+
+    // Calculate the end date (Sunday)
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+
+    // Handle special week case
+    if (startDate.getDate() === 30 && startDate.getMonth() === 11) {
+      return specialWeek;
+    }
+
+    return `${startDate.getDate()}/${
+      startDate.getMonth() + 1
+    }-${endDate.getDate()}/${endDate.getMonth() + 1}`;
+  };
+
   useEffect(() => {
     fetchListSubject();
+    setSelectedWeek(getCurrentWeek());
   }, []);
+
+  const fetchStatistics = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_API_URL}/attendance-management/attendance-report-list`,
+        {
+          classId: id,
+          subjectId: selectedSubject,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getJwtToken()}`,
+          },
+        }
+      );
+      if (response?.data?.data) {
+        setStatistics(response?.data?.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     if (!selectedSubject) return;
     fetchListAttendance();
+    fetchStatistics();
   }, [selectedSubject]);
+  console.log("statistic", statistic);
+
+  const generateWeeks = (year: number) => {
+    const weeks = [];
+    if (year == 2025) weeks.push(specialWeek);
+    let startDay = new Date(year, 0, 1);
+
+    // Adjust startDay to the first Monday of the year
+    while (startDay.getDay() !== 1) {
+      startDay.setDate(startDay.getDate() + 1);
+    }
+
+    for (let i = 0; i < 52; i++) {
+      const endDay = new Date(startDay);
+      endDay.setDate(endDay.getDate() + 6);
+      weeks.push(
+        `${startDay.getDate()}/${startDay.getMonth() + 1}-${endDay.getDate()}/${
+          endDay.getMonth() + 1
+        }`
+      );
+      startDay.setDate(startDay.getDate() + 7);
+    }
+    if (year == 2024) weeks.push(specialWeek);
+    return weeks;
+  };
+
+  const weeks = generateWeeks(selectedYear);
 
   return (
     <div>
@@ -356,15 +421,37 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
         <CardContent className="p-0">
           <div className="flex items-center gap-6 mb-6">
             <div className="flex items-center gap-4">
-              <span className="font-medium">MileStone:</span>
-              <Select value={selectedMonth} onValueChange={handleChangeMonth}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue>{selectedMonth}</SelectValue>
+              <span className="font-medium">Year:</span>
+              <Select
+                value={selectedYear.toString()}
+                onValueChange={(value) => {
+                  setSelectedYear(value as unknown as number);
+                  if (value === "2025") {
+                    setSelectedWeek(getCurrentWeek());
+                  } else {
+                    setSelectedWeek(specialWeek);
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue>{selectedYear}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {months.map((month) => (
-                    <SelectItem key={month} value={month}>
-                      {month}
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2025">2025</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-medium">Week:</span>
+              <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue>{selectedWeek}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {weeks.map((week, index) => (
+                    <SelectItem key={index} value={week}>
+                      {week}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -398,32 +485,43 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="p-3 text-center w-16 bg-green-500 text-white border border-green-600">
+                  <th
+                    className="p-3 text-center w-16 bg-green-500 text-white border border-green-600"
+                    rowSpan={2}
+                  >
                     #
                   </th>
                   <th
                     className="p-3 text-left bg-green-500 text-white border border-green-600"
                     style={{ width: "300px" }}
+                    rowSpan={2}
                   >
                     Name
                   </th>
-                  {listDateOfMonth.map((date) => (
+                  {days.map((date) => (
+                    <th
+                      key={date}
+                      colSpan={2}
+                      className="p-3 text-center bg-green-500 text-white border border-green-600"
+                    >
+                      {date}
+                    </th>
+                  ))}
+                </tr>
+                <tr>
+                  {days.map((date) => (
                     <>
                       <th
                         key={`${date}-slot1`}
                         className="p-3 text-center bg-green-500 text-white border border-green-600 min-w-3"
                       >
-                        {date}
-                        <br />
-                        Slot1
+                        Slot 1
                       </th>
                       <th
                         key={`${date}-slot2`}
                         className="p-3 text-center bg-green-500 text-white border border-green-600 min-w-3"
                       >
-                        {date}
-                        <br />
-                        Slot2
+                        Slot 2
                       </th>
                     </>
                   ))}
@@ -436,7 +534,7 @@ const TakeAttendanceForm = ({ id, listTrainee }: Props) => {
                     <td className="p-3 border" style={{ whiteSpace: "nowrap" }}>
                       {trainee.fullName}
                     </td>
-                    {listDateOfMonth.map((date: any) => (
+                    {days.map((date: any) => (
                       <>
                         <td
                           key={`${trainee.userId}-${date}-slot1`}
