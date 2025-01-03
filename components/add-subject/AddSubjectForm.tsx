@@ -653,7 +653,7 @@ const AddSubjectForm = ({ id }: { id?: any }) => {
       if (contentType?.includes("application/json")) {
         const data = await response.json();
         console.log("data", data);
-        const newLessonList = data;
+        const newLessonList = data?.data;
         console.log("lessonList", newLessonList);
         setInitialValues((prev) => ({
           ...prev,
